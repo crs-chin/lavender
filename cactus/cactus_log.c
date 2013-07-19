@@ -296,6 +296,7 @@ static int __do_log_conntrack(nfct_msg *msg, time_t *t)
                 orig_state = "[UNREPLIED] ";
             if(ent->status & IPS_ASSURED)
                 rep_state = "[ASSURED] ";
+            break;
         default:
             sprintf(protonum, "[%u]", src.src.l3num);
             prot = protonum;
@@ -367,6 +368,7 @@ static int __do_log_conntrack(nfct_msg *msg, time_t *t)
                 orig_state = "[UNREPLIED] ";
             if(ent->status & IPS_ASSURED)
                 rep_state = "[ASSURED] ";
+            break;
         default:
             sprintf(protonum, "[%u]", src.src.l3num);
             prot = protonum;

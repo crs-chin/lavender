@@ -186,13 +186,13 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/chin/work/lavender/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run aclocal-1.11
 ALLOCA = 
-AMTAR = ${SHELL} /home/chin/work/lavender/missing --run tar
+AMTAR = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run tar
 AR = ar
-AUTOCONF = ${SHELL} /home/chin/work/lavender/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/chin/work/lavender/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/chin/work/lavender/missing --run automake-1.11
+AUTOCONF = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -228,7 +228,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/chin/work/lavender/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
@@ -255,10 +255,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.2.0
-abs_builddir = /home/chin/work/lavender
-abs_srcdir = /home/chin/work/lavender
-abs_top_builddir = /home/chin/work/lavender
-abs_top_srcdir = /home/chin/work/lavender
+abs_builddir = /home/chin/work/lavender-0.2.0
+abs_srcdir = /home/chin/work/lavender-0.2.0
+abs_top_builddir = /home/chin/work/lavender-0.2.0
+abs_top_srcdir = /home/chin/work/lavender-0.2.0
 ac_ct_CC = gcc
 ac_ct_DUMPBIN = 
 am__include = include
@@ -286,7 +286,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/chin/work/lavender/install-sh
+install_sh = ${SHELL} /home/chin/work/lavender-0.2.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -1006,7 +1006,7 @@ distcheck: dist
 	*.zip*) \
 	  unzip $(distdir).zip ;;\
 	esac
-	chmod -R a-w $(distdir); chmod u+w $(distdir)
+	chmod -R a-w $(distdir); chmod a+w $(distdir)
 	mkdir $(distdir)/_build
 	mkdir $(distdir)/_inst
 	chmod a-w $(distdir)

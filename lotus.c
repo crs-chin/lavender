@@ -29,6 +29,7 @@
 #include <time.h>
 #ifndef ANDROID_CHANGES
 #include <readline/readline.h>
+#include <readline/history.h>
 #endif
 #include <ctype.h>
 
@@ -42,6 +43,8 @@
 
 typedef struct _verdict_record verdict_record;
 typedef struct _command_desc command_desc;
+typedef struct _nw_conn nw_conn;
+typedef struct _nw_conn_ctx nw_conn_ctx;
 
 struct _verdict_record{
     verdict_record *next;
@@ -55,11 +58,23 @@ struct _command_desc{
     const char *(*get_help)(const char *cmd);
 };
 
+struct _nw_conn{
+    list list;
+    uint64_t seq;
+    msg_nw_connection conn;
+};
+
+struct _nw_conn_ctx{
+    list head;
+    uint64_t seq;
+};
+
 static const char banner[] = "Lotus, The Lavender CLI console";
 
 static pthread_mutex_t record_lock = PTHREAD_MUTEX_INITIALIZER;
 static verdict_record *record_list = NULL;
 static verdict_record *record_end = NULL;
+static list conn_head = LIST_HEAD_INIT(conn_head);
 
 static void cmd_list(char *args[], const command_desc *cmd);
 static void cmd_verd(char *args[], const command_desc *cmd);
@@ -100,22 +115,22 @@ static const struct{
 };
 
 static const char *target_tbl[] = {
-	"ACCEPT",
-	"REINJECT",
-	"VERDICT",
-	"DROP",
-	"KILL",
+    "ACCEPT",
+    "REINJECT",
+    "VERDICT",
+    "DROP",
+    "KILL",
 };
 
 static const char *verdict_tbl[] = {
-	"NONE",
-	"VERDICT",
-	"ALLOW ONCE",
-	"ACCEPT",
-	"DENY ONCE",
-	"DROP",
-	"KILL ONCE",
-	"KILL",
+    "NONE",
+    "VERDICT",
+    "ALLOW ONCE",
+    "ACCEPT",
+    "DENY ONCE",
+    "DROP",
+    "KILL ONCE",
+    "KILL",
 };
 
 enum{
@@ -168,22 +183,22 @@ static const char *get_help(const char *cmd)
         msg = "  list Cactus fw objects:\n"
             "    list [ARGUMENTS]\n"
             "  ARGUMENTS:\n"
-            "    verd         show pending verdicts\n"
-            "    prog  [OPT]  show fw recorded progs\n"
+            "    verd               show pending verdicts\n"
+            "    prog  [OPT]        show fw recorded progs\n"
             "     OPT:\n"
-            "     active      show only active progs\n"
-            "    proc  [OPT]  show fw recorded processes\n"
+            "     active            show only active progs\n"
+            "    proc  [OPT]        show fw recorded processes\n"
             "     OPT:\n"
-            "     prog <PATH> show processes of prog specified\n"
-            "     user <UID>  show processes of uid specified\n"
-            "    user  [OPT]  show fw recorded users\n"
+            "     prog <PATH>       show processes of prog specified\n"
+            "     user <UID>        show processes of uid specified\n"
+            "    user  [OPT]        show fw recorded users\n"
             "     OPT:\n"
-            "     active      show only active users\n"
-            "    conn [OPT]   show fw recorded connections\n"
+            "     active            show only active users\n"
+            "    conn [OPT]         show fw recorded connections\n"
             "     OPT:\n"
-            "     proc <PID>  show connections of pid specified\n"
-            "     prog <PATH> show connections of prog specified\n"
-            "     user <UID>  show connections of uid specified";
+            "     proc <PID>        show connections of pid specified\n"
+            "     prog <PATH> <UID> show connections of prog specified\n"
+            "     user <UID>        show connections of uid specified";
     }else if(! strcmp(cmd, "verd"))  {
         msg = "  verdict the last verdict request:\n"
             "    verd [TARGET]\n"
@@ -337,96 +352,307 @@ static void list_verd(void)
 
 static const char *action_string(int action)
 {
-	int target = ACTION_TARGET(action);
-	int verdict = ACTION_VERDICT(action);
+    int target = ACTION_TARGET(action);
+    int verdict = ACTION_VERDICT(action);
 
-	if(target < 0 || target >= arraysize(target_tbl))
-		return "<INVALID ACTION>";
-	if(target == FW_VERDICT)  {
-		if(verdict < 0 || verdict >= arraysize(verdict_tbl))
-			return "<INVALID VERDICT>";
-		return verdict_tbl[verdict];
-	}
-	return target_tbl[target];
+    if(target < 0 || target >= arraysize(target_tbl))
+        return "<INVALID ACTION>";
+    if(target == FW_VERDICT)  {
+        if(verdict < 0 || verdict >= arraysize(verdict_tbl))
+            return "<INVALID VERDICT>";
+        return verdict_tbl[verdict];
+    }
+    return target_tbl[target];
 }
 
 static void list_prog(char *args[])
 {
-	int seq = 0, flags = 0;
-	fw_obj *obj;
-	msg_prog_res *res;
-	list progs;
+    int seq = 0, flags = 0;
+    fw_obj *obj;
+    msg_prog_res *res;
+    list progs;
 
-	if(args[0] && args[0][0])  {
-		if(! strcasecmp(args[0], "active"))  {
-			flags = ITER_F_ACTIVE;
-		}else  {
-			printf("Unrecognized argument \"%s\"\n", args[0]);
-			return;
-		}
-	}
+    if(args[0] && args[0][0])  {
+        if(! strcasecmp(args[0], "active"))  {
+            flags = ITER_F_ACTIVE;
+        }else  {
+            printf("Unrecognized argument \"%s\"\n", args[0]);
+            return;
+        }
+    }
 
-	desert_get_all_fw_progs(&progs, flags);
+    desert_get_all_fw_progs(&progs, flags);
 
-	if(list_empty(&progs))  {
-		printf("No records returned!\n");
-		return;
-	}
+    if(list_empty(&progs))  {
+        printf("No records returned!\n");
+        return;
+    }
 
-	printf("INDEX UID        ACTION          PATH\n");
-	list_for_each_entry(obj, &progs, list)  {
-		res = &obj->prog[0];
-		printf("[%d].  %-10u %-15s %s\n", seq++, res->uid, action_string(res->action), res->path);
-	}
-	fw_objs_free(&progs);
+    printf("INDEX UID        ACTION          PATH\n");
+    list_for_each_entry(obj, &progs, list)  {
+        res = &obj->prog[0];
+        printf("[%d].  %-10u %-15s %s\n", seq++, res->uid, action_string(res->action), res->path);
+    }
+    fw_objs_free(&progs);
 }
 
 static void list_user(char *args[])
 {
-	int seq = 0, flags = 0;
-	fw_obj *obj;
-	msg_user_res *res;
-	list users;
+    int seq = 0, flags = 0;
+    fw_obj *obj;
+    msg_user_res *res;
+    list users;
 
-	if(args[0] && args[0][0])  {
-		if(! strcasecmp(args[0], "active"))  {
-			flags = ITER_F_ACTIVE;
-		}else  {
-			printf("Unrecognized argument \"%s\"\n", args[0]);
-			return;
-		}
-	}
+    if(args[0] && args[0][0])  {
+        if(! strcasecmp(args[0], "active"))  {
+            flags = ITER_F_ACTIVE;
+        }else  {
+            printf("Unrecognized argument \"%s\"\n", args[0]);
+            return;
+        }
+    }
 
-	desert_get_all_fw_users(&users, flags);
+    desert_get_all_fw_users(&users, flags);
 
-	if(list_empty(&users))  {
-		printf("No records returned!\n");
-		return;
-	}
+    if(list_empty(&users))  {
+        printf("No records returned!\n");
+        return;
+    }
 
-	printf("INDEX UID        NAME\n");
-	list_for_each_entry(obj, &users, list)  {
-		res = &obj->user[0];
-		printf("[%d].  %-10u %s\n", seq++, res->uid, res->name);
-	}
-	fw_objs_free(&users);
+    printf("INDEX UID        NAME\n");
+    list_for_each_entry(obj, &users, list)  {
+        res = &obj->user[0];
+        printf("[%d].  %-10u %s\n", seq++, res->uid, res->name);
+    }
+    fw_objs_free(&users);
 }
 
 static void list_proc(char *args[])
 {
-	int seq = 0;
-	msg_proc_res *res;
-	list procs;
+    int seq = 0;
+    msg_proc_res *res;
+    fw_obj *obj;
+    list procs;
 
-	if(args[0] && args[0][0])  {
-		/* TODO: */
-	}
-	/* TODO: */
+    if(args[0] && args[0][0])  {
+        if(! strcasecmp(args[0], "prog"))  {
+            if(! args[1] || ! args[1][0])  {
+                printf("Parameter \"prog\" requires an argument, abort!\n");
+                return;
+            }
+            desert_get_all_procs_of_prog(&procs, args[1]);
+        }else if(! strcasecmp(args[0], "user"))  {
+            char *endp;
+            uid_t uid;
+
+            if(! args[1] || ! args[1][0])  {
+                printf("Parameter \"user\" requires an argument, abort!\n");
+                return;
+            }
+            uid = strtol(args[1], &endp, 0);
+            if(*endp)  {
+                printf("Not a valid UID \"%s\", abort!\n", args[1]);
+                return;
+            }
+            desert_get_all_procs_of_user(&procs, uid);
+        }else  {
+            printf("Invalid argument \"%s\", abort!\n", args[0]);
+            return;
+        }
+    }else  {
+        desert_get_all_fw_procs(&procs);
+    }
+
+    if(list_empty(&procs))  {
+        printf("No records returned!\n");
+        return;
+    }
+
+    printf("INDEX PID      UID      ACTION       PATH\n");
+    list_for_each_entry(obj, &procs, list)  {
+        res = &obj->proc[0];
+        printf("[%d].  %-8u %-8u %-12s %s\n",
+               seq++, res->pid, res->uid, action_string(res->action), res->exe);
+    }
+    fw_objs_free(&procs);
+}
+
+static inline void nw_conn_clear(list *head)
+{
+    nw_conn *conn, *n;
+
+    list_for_each_entry_safe(conn, n, head, list)  {
+        list_delete(&conn->list);
+        free(conn);
+    }
+}
+
+static void conn_print(const nw_conn *conn)
+{
+    const conn_parm *p = &conn->conn.conn_parm;
+    char protonum[20];
+    const char *prot = "unknown";
+
+    switch(p->src.l3num)  {
+    case AF_INET:  {
+        const unsigned char *ip_src = (const unsigned char *)&p->src.u3.ip;
+        const unsigned char *ip_dst = (const unsigned char *)&p->dst.u3.ip;
+
+        switch(p->dst.protonum)  {
+        case IPPROTO_TCP:
+            prot = "TCP";
+            break;
+        case IPPROTO_UDP:
+            prot = "UDP";
+            break;
+        case IPPROTO_UDPLITE:
+            prot = "UDPlite";
+            break;
+        case IPPROTO_ICMP:
+            prot = "ICMP";
+            break;
+        default:
+            sprintf(protonum, "[%u]", p->src.l3num);
+            prot = protonum;
+            break;
+        }
+        printf("[%-5llu] IPv4 %s   " IP_FMT "  " IP_FMT "  %u  %u\n",
+               conn->seq, prot, IP_ARG(p->src.u3.ip), IP_ARG(p->dst.u3.ip),
+               ntohs(p->src.u.tcp.port), ntohs(p->dst.u.tcp.port));
+        break;
+    }
+    case AF_INET6:  {
+        char ip6_addr[4][INET6_ADDRSTRLEN];
+
+        switch(p->dst.protonum)  {
+        case IPPROTO_TCP:
+            prot = "TCP";
+            break;
+        case IPPROTO_UDP:
+            prot = "UDP";
+            break;
+        case IPPROTO_UDPLITE:
+            prot = "UDPlite";
+            break;
+        case IPPROTO_ICMP:
+            prot = "ICMP";
+            break;
+        default:
+            sprintf(protonum, "[%u]", p->src.l3num);
+            prot = protonum;
+            break;
+        }
+        printf("[%-5llu] IPv6 %s   %s  %s  %u  %u\n",
+               conn->seq,  prot,
+               inet_ntop(AF_INET6, p->src.u3.ip6, ip6_addr[0], INET6_ADDRSTRLEN) ? : "<INVALID>",
+               inet_ntop(AF_INET6, p->dst.u3.ip6, ip6_addr[1], INET6_ADDRSTRLEN) ? : "<INVALID>",
+               ntohs(p->src.u.tcp.port), ntohs(p->dst.u.tcp.port));
+        break;
+    }
+    default:  {
+        printf("[%-5llu] %u\n", conn->seq, p->src.l3num);
+        break;
+    }
+    }
+}
+
+static inline void nw_conn_print(list *list)
+{
+    nw_conn *conn;
+
+    list_for_each_entry(conn, list, list)  {
+        conn_print(conn);
+    }
+}
+
+static int cp_conn_cb(const msg_nw_connection *conn, void *ud)
+{
+    nw_conn_ctx *ctx = (nw_conn_ctx *)ud;
+    nw_conn *nc;
+
+    if((nc = new_instance(nw_conn)))  {
+        nc->seq = ctx->seq++;
+        memcpy(&nc->conn, conn, sizeof(*conn));
+        list_append(&ctx->head, &nc->list);
+        return 1;
+    }
+    printf("OOM alloc nw conn!\n");
+    return 0;
 }
 
 static void list_conn(char *args[])
 {
-	/* TODO: */
+    nw_conn_ctx ctx;
+
+    if(! args[0] || ! args[0][0])  {
+        printf("Parameter \"conn\" requires arguments!\n");
+        return;
+    }
+
+    list_init(&ctx.head);
+    ctx.seq = 0;
+    if(! strcasecmp(args[0], "proc"))  {
+            char *endp;
+            uid_t pid;
+
+            if(! args[1] || ! args[1][0])  {
+                printf("Parameter \"proc\" requires an argument, abort!\n");
+                return;
+            }
+            pid = strtol(args[1], &endp, 0);
+            if(*endp)  {
+                printf("Not a valid PID \"%s\", abort!\n", args[1]);
+                return;
+            }
+
+            desert_get_proc_conn(pid, cp_conn_cb, &ctx);
+    }else if(! strcasecmp(args[0], "prog"))  {
+        char *path, *endp;
+        uid_t uid;
+
+            if(! args[1] || ! args[1][0]
+               || ! args[2] || ! args[2][0])  {
+                printf("Parameter \"prog\" requires arguments, abort!\n");
+                return;
+            }
+
+            path = args[1];
+            uid = strtol(args[2], &endp, 0);
+            if(*endp)  {
+                printf("Not a valid UID \"%s\", abort!\n", args[1]);
+                return;
+            }
+
+            desert_get_prog_conn(path, uid, cp_conn_cb, &ctx);
+    }else if(! strcasecmp(args[0], "user"))  {
+            char *endp;
+            uid_t uid;
+
+            if(! args[1] || ! args[1][0])  {
+                printf("Parameter \"user\" requires an argument, abort!\n");
+                return;
+            }
+            uid = strtol(args[1], &endp, 0);
+            if(*endp)  {
+                printf("Not a valid UID \"%s\", abort!\n", args[1]);
+                return;
+            }
+
+            desert_get_user_conn(uid, cp_conn_cb, &ctx);
+    }else  {
+        printf("Unrecognized aregument \"%s\", abort!\n", args[0]);
+        return;
+    }
+
+    if(list_empty(&ctx.head))  {
+        printf("No records returned.\n");
+        return;
+    }
+
+    nw_conn_clear(&conn_head);
+    list_assign(&conn_head, &ctx.head);
+    printf("SEQ     AF   PROTO SOURCE         DESTINATION  SPORT  DPORT\n");
+    nw_conn_print(&conn_head);
 }
 
 static void cmd_list(char *args[], const command_desc *cd)
@@ -441,13 +667,13 @@ static void cmd_list(char *args[], const command_desc *cd)
     if(! strcasecmp(cmd, "verd"))  {
         list_verd();
     }else if(! strcasecmp(cmd, "prog"))  {
-		list_prog(args + 1);
-	}else if(! strcasecmp(cmd, "user"))  {
-		list_user(args + 1);
-	}else if(! strcasecmp(cmd, "proc"))  {
-		list_proc(args + 1);
-	}else if(! strcasecmp(cmd, "conn"))  {
-		list_conn(args + 1);
+        list_prog(args + 1);
+    }else if(! strcasecmp(cmd, "user"))  {
+        list_user(args + 1);
+    }else if(! strcasecmp(cmd, "proc"))  {
+        list_proc(args + 1);
+    }else if(! strcasecmp(cmd, "conn"))  {
+        list_conn(args + 1);
     }else  {
         printf("Unrecognized command argument:\"%s\", abort!\n", cmd);
     }
@@ -625,6 +851,7 @@ static void front_end(void)
             free(cmd);
         if(! (cmd = readline(prompt)))
             return;
+        add_history(cmd);
 #else
         char buf[1024];
 
@@ -632,7 +859,6 @@ static void front_end(void)
         if(! (cmd = fgets(buf, sizeof(buf), stdin)))
             return;
 #endif
-
         if(! tokenize(&toks, &sz, cmd))  {
             printf("Malformated command & arguments!\n");
             continue;

@@ -636,6 +636,10 @@ static int get_conn_cb(void *rsp, size_t sz, int flags, void *ud)
     get_conn_ctx *ctx = (get_conn_ctx *)ud;
     msg_nw_connection *conn = (msg_nw_connection *)rsp;
 
+    /* end of sequence */
+    if(sz == 0)
+        return 0;
+
     if(sz != sizeof(*conn))  {
         PR_ERROR("invalid nw conn blob size returned, break");
         return 0;
@@ -687,6 +691,70 @@ void desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud)
     req.uid = uid;
     rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
                               &req, sizeof(req), get_conn_cb, &ctx, 0);
+}
+
+static int cp_conn_cb(void *rsp, size_t sz, int flags, void *ud)
+{
+    list *head = (list *)ud;
+    msg_nw_connection *conn = (msg_nw_connection *)rsp;
+    fw_obj *obj;
+
+    /* end of sequence */
+    if(sz == 0)
+        return 0;
+
+    if(sz != sizeof(*conn))  {
+        PR_ERROR("invalid nw conn blob size returned, break");
+        return 0;
+    }
+
+    if((obj = new_instance_ex(fw_obj, sz)))  {
+        memcpy(obj->payload, rsp, sz);
+        list_append(head, &obj->list);
+        return 1;
+    }
+    PR_ERROR("OOM alloc fw obj");
+    return 0;
+}
+
+void desert_get_all_proc_conn(list *conns, pid_t pid)
+{
+    msg_query_nw_req req = {
+        .type = TYPE_PROC,
+    };
+
+    assert(__initialized);
+    req.pid = pid;
+    list_init(conns);
+    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                              &req, sizeof(req), cp_conn_cb, conns, 0);
+}
+
+void desert_get_all_prog_conn(list *conns, const char *path, uid_t uid)
+{
+    char _req[sizeof(msg_query_nw_req) + strlen(path) + 1];
+    msg_query_nw_req *req = (msg_query_nw_req *)&_req;
+
+    assert(__initialized);
+    req->type = TYPE_PROG;
+    req->uid = uid;
+    strcpy(req->path, path);
+    list_init(conns);
+    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                              req, sizeof(_req), cp_conn_cb, conns, 0);
+}
+
+void desert_get_all_user_conn(list *conns, uid_t uid)
+{
+    msg_query_nw_req req = {
+        .type = TYPE_USER,
+    };
+
+    assert(__initialized);
+    req.uid = uid;
+    list_init(conns);
+    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                              &req, sizeof(req), cp_conn_cb, conns, 0);
 }
 
 int desert_get_conn_counter(__u16 zone, const conn_parm *parm, msg_nw_counter *counter)
@@ -759,8 +827,8 @@ static int get_obj_cb(void *rsp, size_t sz, int flags, void *ud)
 {
     get_obj_ctx *ctx = (get_obj_ctx *)ud;
 
-	if(sz == 0)
-		return 0;
+    if(sz == 0)
+        return 0;
 
     switch(ctx->type)  {
     case TYPE_PROC:  {
@@ -884,17 +952,20 @@ void desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud)
 
 static int cp_obj_cb(void *rsp, size_t sz, int flags, void *ud)
 {
-	list *head = (list *)ud;
-	fw_obj *obj;
+    list *head = (list *)ud;
+    fw_obj *obj;
 
-	/* ??check blob from server */
-	if(sz > 0 && (obj = new_instance_ex(fw_obj, sz)))  {
-		memcpy(obj->payload, rsp, sz);
-		list_append(head, &obj->list);
-		return 1;
-	}
-	PR_ERROR("OOM alloc fw obj!");
-	return 0;
+    /* end of sequence */
+    if(sz == 0)
+        return 0;
+    /* ??check blob from server */
+    if((obj = new_instance_ex(fw_obj, sz)))  {
+        memcpy(obj->payload, rsp, sz);
+        list_append(head, &obj->list);
+        return 1;
+    }
+    PR_ERROR("OOM alloc fw obj!");
+    return 0;
 }
 
 void desert_get_all_fw_procs(list *procs)
@@ -905,7 +976,7 @@ void desert_get_all_fw_procs(list *procs)
         .uid = 0,
     };
 
-	list_init(procs);
+    list_init(procs);
     rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
                               &req, sizeof(req), cp_obj_cb, procs, 0);
 }
@@ -918,7 +989,7 @@ void desert_get_all_fw_progs(list *progs, int flags)
         .uid = 0,
     };
 
-	list_init(progs);
+    list_init(progs);
     rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
                               &req, sizeof(req), cp_obj_cb, progs, 0);
 }
@@ -931,7 +1002,7 @@ void desert_get_all_fw_users(list *users, int flags)
         .uid = 0,
     };
 
-	list_init(users);
+    list_init(users);
     rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
                               &req, sizeof(req), cp_obj_cb, users, 0);
 }
@@ -945,7 +1016,7 @@ void desert_get_all_procs_of_prog(list *procs, const char *path)
     req->by_which = BY_PROG;
     req->uid = 0;
     strcpy(req->path, path);
-	list_init(procs);
+    list_init(procs);
     rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
                               req, sizeof(_req), cp_obj_cb, procs, 0);
 }
@@ -958,7 +1029,7 @@ void desert_get_all_procs_of_user(list *procs, uid_t uid)
         .uid = uid,
     };
 
-	list_init(procs);
+    list_init(procs);
     rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
                               &req, sizeof(req), cp_obj_cb, procs, 0);
 }

@@ -98,7 +98,15 @@ static int __for_each_conn_cb(__u16 zone, const conn_tuple *src, void *ud)
 {
     for_each_ctx *ctx = (for_each_ctx *)ud;
     msg_nw_connection conn;
+    conn_parm *parm = &conn.conn_parm;
 
+    conn.zone = zone;
+    parm->src.u3 = src->src.u3;
+    parm->src.u = src->src.u;
+    parm->src.l3num = src->src.l3num;
+    parm->dst.u3 = src->dst.u3;
+    parm->dst.u.all = src->dst.u.all;
+    parm->dst.protonum = src->dst.protonum;
     return ! ctx->rsp(&conn, sizeof(conn), RPCLITE_RSP_MORE, ctx->ud);
 }
 

@@ -117,6 +117,29 @@ int desert_set_throttle_prog(const char *path, uid_t uid, int enabled);
 int desert_get_throttle_user(uid_t uid);
 int desert_set_throttle_user(uid_t uid, int enabled);
 
+typedef struct _fw_obj fw_obj;
+
+struct _fw_obj{
+    list list;
+    union{
+        msg_prog_res prog[0];
+        msg_proc_res proc[0];
+        msg_user_res user[0];
+        msg_nw_connection conn[0];
+        char payload[0];
+    };
+};
+
+static inline void fw_objs_free(list *objs)
+{
+    fw_obj *obj, *n;
+
+    list_for_each_entry_safe(obj, n, objs, list)  {
+        list_delete(&obj->list);
+        free(obj);
+    }
+}
+
 /**
  * return 0 to break iteration
  */
@@ -125,6 +148,10 @@ typedef int (*desert_conn_cb)(const msg_nw_connection *conn, void *ud);
 void desert_get_proc_conn(pid_t pid, desert_conn_cb cb, void *ud);
 void desert_get_prog_conn(const char *path, uid_t uid, desert_conn_cb cb, void *ud);
 void desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud);
+
+void desert_get_all_proc_conn(list *conns, pid_t pid);
+void desert_get_all_prog_conn(list *conns, const char *path, uid_t uid);
+void desert_get_all_user_conn(list *conns, uid_t uid);
 
 int desert_get_conn_counter(__u16 zone, const conn_parm *parm, msg_nw_counter *counter);
 int desert_get_proc_counter(pid_t pid, msg_nw_counter *counter);
@@ -145,28 +172,6 @@ void desert_get_fw_progs(int flags, desert_prog_cb cb, void *ud);
 void desert_get_fw_users(int flags, desert_user_cb cb, void *ud);
 void desert_get_procs_of_prog(const char *path, desert_proc_cb cb, void *ud);
 void desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud);
-
-typedef struct _fw_obj fw_obj;
-
-struct _fw_obj{
-	list list;
-	union{
-		msg_prog_res prog[0];
-		msg_proc_res proc[0];
-		msg_user_res user[0];
-		char payload[0];
-	};
-};
-
-static inline void fw_objs_free(list *objs)
-{
-	fw_obj *obj, *n;
-
-	list_for_each_entry_safe(obj, n, objs, list)  {
-		list_delete(&obj->list);
-		free(obj);
-	}
-}
 
 void desert_get_all_fw_procs(list *procs);
 void desert_get_all_fw_progs(list *progs, int flags);
