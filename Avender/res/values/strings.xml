@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Avender</string>
+    <string name="verdict_request">Verdict Request</string>
+    <string name="action_settings">Settings</string>
+    <string name="enable_cactus">Enable Cactus</string>
+    <string name="disable_cactus">Disable Cactus</string>
+    <string name="start_lavender">Start Lavender Service</string>
+    <string name="stop_lavender">Stop Lavender Service</string>
+    <string name="avender_desc">Android Service the Lavender</string>
+    <string name="button_dismiss">Dismiss</string>
+    <string name="button_allow">Allow</string>
+    <string name="button_deny">Deny</string>
+    <string name="for_once">Just for this time</string>
+    <string name="not_again">Don\'t ask again</string>
+    <string name="dummy_string">DUMMP STRING</string>
+    <string name="icon">ICON</string>
+    <string name="enable_main_log">Enale Main Log</string>
+    <string name="disable_main_log">Disable Main Log</string>
+    <string name="enable_rtnl_log">Enable RTNL Log</string>
+    <string name="disable_rtnl_log">Disable RTNL Log</string>
+    <string name="enable_uevent_log">Enable UEvent Log</string>
+    <string name="disable_uevent_log">Disable UEvent Log</string>
+    <string name="enable_conntrack_log">Enable CONNTRACK Log</string>
+    <string name="disable_conntrack_log">Disable CONNTRACK Log</string>
+    <string name="service_unavailable">Service Unavailable</string>
+    <string name="service_disconnected">Service Disconnected</string>
+    <string name="cactus_enabled">Lavender Service Activated</string>
+    <string name="button_kill">Kill</string>
+</resources>

@@ -1,0 +1,4 @@
+javender
+  Lavender client side interface library for java applications,
+eg. Android.
+  System headers are of cpp format, so jni has to be cpp format :(

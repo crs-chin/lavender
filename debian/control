@@ -1,0 +1,17 @@
+Source: lavender
+Section: net
+Priority: extra
+Maintainer: Cross Chin <crs.chin@gmail.com>
+Build-Depends: cdbs, debhelper (>= 7.0.50~), autotools-dev
+Standards-Version: 3.8.4
+Homepage: N/A
+#Vcs-Git: git://git.debian.org/collab-maint/lavender.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/lavender.git;a=summary
+
+Package: lavender
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Personal firewall auditing local program and user network actions
+  Lavender automatically hook programs' network access attempts and
+  verdict according to rule definitions, or prompt to user if not
+  defined, allow users to decide programs' network actions dynamically.

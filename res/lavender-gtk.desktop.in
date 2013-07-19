@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Lavender GTK Client
+Comment=Auditing local applications network access and behavior
+Exec=@LAVENDER_GTK_PATH@
+Icon=@LAVENDER_ICON@
+Terminal=false
+Encoding=UTF-8
+Categories=Application;Network;

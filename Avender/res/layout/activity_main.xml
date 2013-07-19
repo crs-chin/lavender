@@ -1,0 +1,78 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/cactus_status_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:onClick="onCactusStatusSwitchClick"
+        android:text="@string/enable_cactus" />
+
+    <Button
+        android:id="@+id/lavender_service_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cactus_status_switch"
+        android:layout_alignRight="@+id/cactus_status_switch"
+        android:layout_below="@+id/cactus_status_switch"
+        android:onClick="onLavenderServiceSwitchClick"
+        android:text="@string/start_lavender" />
+
+    <Button
+        android:id="@+id/main_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lavender_service_switch"
+        android:layout_alignRight="@+id/lavender_service_switch"
+        android:layout_below="@+id/lavender_service_switch"
+        android:onClick="onMainLogSwitchClick"
+        android:text="@string/enable_main_log" />
+
+    <Button
+        android:id="@+id/rtnl_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/main_log"
+        android:layout_alignRight="@+id/main_log"
+        android:layout_below="@+id/main_log"
+        android:onClick="onRTNLLogSwitchClick"
+        android:text="@string/enable_rtnl_log" />
+
+    <Button
+        android:id="@+id/conntrack_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/uevent_log"
+        android:layout_alignRight="@+id/uevent_log"
+        android:layout_below="@+id/uevent_log"
+        android:onClick="onCONNTRACKLogSwitchClick"
+        android:text="@string/enable_conntrack_log" />
+
+    <TextView
+        android:id="@+id/version_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/conntrack_log"
+        android:layout_alignRight="@+id/conntrack_log"
+        android:layout_below="@+id/conntrack_log" />
+
+    <Button
+        android:id="@+id/uevent_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/rtnl_log"
+        android:layout_alignRight="@+id/rtnl_log"
+        android:layout_below="@+id/rtnl_log"
+        android:onClick="onUEventLogSwitchClick"
+        android:text="@string/enable_uevent_log" />
+
+</RelativeLayout>

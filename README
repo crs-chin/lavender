@@ -1,0 +1,89 @@
+  This program heavily depends on some kernel features which are only
+optional for normal use, be sure those are configured, otherwise it
+will refuse to run
+
+MANDATORY CONFIGS:
+  CONFIG_NET
+  CONFIG_UNIX
+  CONFIG_INET
+  CONFIG_INET_DIAG
+  CONFIG_INET_TCP_DIAG
+  CONFIG_NETFILTER
+  CONFIG_NETFILTER_NETLINK
+  CONFIG_NETFILTER_NETLINK_QUEUE
+  CONFIG_NF_CONNTRACK
+  CONFIG_NF_CONNTRACK_MARK
+  CONFIG_NF_CONNTRACK_EVENTS
+  CONFIG_NF_CT_NETLINK
+  CONFIG_NETFILTER_XTABLES
+  CONFIG_NETFILTER_XT_CONNMARK
+  CONFIG_NETFILTER_XT_TARGET_NFQUEUE
+  CONFIG_NETFILTER_XT_MATCH_CONNMARK
+  CONFIG_NETFILTER_XT_MATCH_STATE
+  CONFIG_NF_CONNTRACK_IPV4
+
+
+
+INTRO:
+
+For OS like windows which could install and run many applications, but
+could not verify the application sources, they may suffer potential
+security issues, like unauthroized network access and related
+behavior, thus there need to be some firewall or similar applications
+the manager and audit applications network behavior.
+
+For linux desktop destributions, we can easy verify the application
+sources, and run programs finely chosen.
+
+But there're still many devices, like Android phones, that usually run
+many closed sources applications, and even occacionally have malware
+or backdoor plugins installed. Once permissions granted at install
+stage will have the granted permssions to anything without neccessary
+to notice the user.
+
+So it's necessary for devices running linux like that to have a
+firewall to gard the system at runtime.
+
+And here's the Lavender Firewall that comes from.
+
+HACK:
+
+Lavender leverages the stardard system facilities provided by the
+linux kernel.
+
+1. netfilter based iptables, ip conntrackers, and nf queues.
+2. inet socket diag facilities.
+3. proc filesystem.
+4. netlink interface to rtnl subsys.
+5. netlink interface to kernel uevents.
+6. and etc.
+
+Lavender works by install iptable rules to make itself notified
+through nfqueue about applications' new network access attempts, and
+decide if the application's allowed to access network by
+configurations in db or prompting the user to decided the
+application's behavior.
+
+And at the same time, lavender also logs all the network access
+attempts made by each applications and system network changes,
+including uevents.
+
+nfq packet drop algorithm:
+1. kernel TCP syn packet retransmit timeout
+   a). 3 sec on init.
+   b). 4 retries by default, can be configured and read from procfs.
+   c). retransmit timeout doubled each time.
+2. each time received verdict TCP SYN packet, drop previous one if
+   exists.
+3. drop verdict TCP SYN packet at drop timeout.
+4. drop timeout set to 3 sec on init, and doubled each time received
+   a new one for the same connection.
+5. queue outgoing verdict TCP SYN packet only.
+6. nfq manage verdict queue internally.
+
+Android Limitations
+1. On Android Ap may create services in system server, the service was
+actually a thread in it, and there's no way to judge AP services'
+network access behavior.
+
+                                                crs.chin@gmail.com

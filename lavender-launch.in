@@ -1,0 +1,160 @@
+#!/bin/bash
+#
+# Copyright (C) <2013>  Crs Chin<crs.chin@gmail.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+#/
+
+COMMAND=lavender
+COMMAND_PATH="@LAVENDER_PATH@"
+COMMAND_ARG=""
+VERIFY_ONLY=no
+KERNEL_CONFIG=""
+KERNEL_VERIFIED=yes
+
+KERNEL_FEATURE=(
+CONFIG_NET
+CONFIG_UNIX
+CONFIG_INET
+CONFIG_INET_DIAG
+CONFIG_INET_TCP_DIAG
+# CONFIG_INET_UDP_DIAG  not mandatory
+CONFIG_NETFILTER
+CONFIG_NETFILTER_NETLINK
+CONFIG_NETFILTER_NETLINK_QUEUE
+CONFIG_NF_CONNTRACK
+CONFIG_NF_CONNTRACK_MARK
+CONFIG_NF_CONNTRACK_EVENTS
+CONFIG_NF_CT_NETLINK
+CONFIG_NETFILTER_XTABLES
+CONFIG_NETFILTER_XT_CONNMARK
+CONFIG_NETFILTER_XT_TARGET_NFQUEUE
+CONFIG_NETFILTER_XT_MATCH_CONNMARK
+CONFIG_NETFILTER_XT_MATCH_STATE
+CONFIG_NF_CONNTRACK_IPV4
+)
+
+detect_kernel_config()
+{
+    if [ -f "/proc/config.gz" ];then
+        KERNEL_CONFIG="/proc/config.gz"
+    elif [ -d "/lib/modules/$(uname -r)/build/.config" ];then
+        KERNEL_CONFIG="/lib/modules/$(uname -r)/build/.config"
+    else
+        return -1
+    fi
+    return 0;
+}
+
+verify_kernel_support()
+{
+    if ! detect_kernel_config;then
+        echo "Unable to detect kernel features, assuming supported.";
+        return 0;
+    fi
+
+    conf=$KERNEL_CONFIG
+    conf_rm=no
+
+    echo "Check kernel config using \"$conf\""
+    case $KERNEL_CONFIG in
+        *.gz)
+            conf=$(tempfile) || { echo "Fail creating tempfile!" && return -1; }
+            conf_rm=yes
+            zcat $KERNEL_CONFIG > $conf
+            ;;
+        *)
+            conf="$KERNEL_CONFIG"
+            ;;
+    esac
+
+    . $conf
+
+    [ $conf_rm = "yes" ] && rm $conf;
+
+    cnt=${#KERNEL_FEATURE[*]};
+    for (( i=0; ((i < cnt)); ((i++)) ));
+    do
+        val=$(eval echo \${${KERNEL_FEATURE[${i}]}})
+        if [ "$val" != "m" -a "$val" != "y" ];then
+            KERNEL_VERIFIED=no
+            echo "Detected running kernel \"${KERNEL_FEATURE[$i]}\" not enabled!"
+        fi
+    done
+}
+
+help()
+{
+    echo "lavender-launch [OPTIONS]"
+    echo "OPTIONS:"
+    echo "  -h      print this message"
+    echo "  -V      verify running kernel support only"
+    echo "  -p arg  pass arg to lavender daemon"
+}
+
+while [ "$1" != "" ];
+do
+    case "$1" in
+        -V)
+            VERIFY_ONLY=yes
+            ;;
+        -h)
+            help
+            exit 0
+            ;;
+        -p)
+            if [ -z "$2" ];then
+                echo "\"$1\" requires a argument"
+                exit 1
+            fi
+            COMMAND_ARG="$2"
+            shift
+            ;;
+        *)
+            echo "unknown argument \"$1\", abort!"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+verify_kernel_support
+
+if [ "$VERIFY_ONLY" = "yes" ];then
+    if [ "$KERNEL_VERIFIED" = "yes" ];then
+        exit 0;
+    else
+        exit 1;
+    fi
+fi
+
+if ! type -p "$COMMAND" > /dev/null; then
+    if ! type -p "$COMMAND_PATH" > /dev/null; then
+        echo "Not detected command \"$COMMAND\", stop!"
+        exit 1
+    else
+        COMMAND="$COMMAND_PATH"
+    fi
+fi
+
+if [ "$KERNEL_VERIFIED" = "yes" ];then
+    echo "Running kernel \"$(uname -r)\" verified OK!"
+    exec $COMMAND $COMMAND_ARG
+else
+    echo "Not launch lavender!"
+    exit 1
+fi
+

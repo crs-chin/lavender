@@ -1,0 +1,6 @@
+all:test
+
+CFLAGS += -DTEST_NFCT
+LDFLAGS += -lpthread -lrt
+
+test:test.o ginkgo.c nl.o nfct.o util.o 

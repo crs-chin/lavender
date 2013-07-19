@@ -1,0 +1,209 @@
+#!/bin/bash
+#
+# Copyright (C) <2013>  Crs Chin<crs.chin@gmail.com>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+#/
+
+
+ROOT_DIR="$OUT";
+DEST_ROOT="./android-latest"
+DEST_DIR=""
+UNINSTALL=no;
+
+FILE_LIST=(
+"/system/lib/libcactus.so"
+"/system/bin/lavender"
+"/system/lib/libdesert.so"
+"/system/bin/lotus"
+"/system/lib/libjavender.so"
+"/system/app/Avender.apk"
+)
+
+usage()
+{
+    echo "$0 [OPTIONS]"
+    echo "  -p  pack up files for android installation"
+    echo "  -u  install native android files"
+    echo "  -h  show this message"
+    echo "Default will install and setup on adb connected Android phone"
+}
+
+while [ -n "$1" ];
+do
+    if [ "$1" = "-p" ];then
+        shift
+        VERSION=$(grep PACKAGE_VERSION config.h | awk '{print $3;}'| tr -d '"')
+        if [ -n "$VERSION" ];then
+            DEST_ROOT="./android-${VERSION}"
+        fi
+        DEST_DIR="$DEST_ROOT/package"
+    elif [ "$1" = "-u" ];then
+        shift
+        UNINSTALL=yes;
+    elif [ "$1" = "-h" ];then
+        usage;
+        exit 0;
+    else
+        echo "unrecognized command %1, abort!"
+        exit -1;
+    fi
+done
+
+if [ -z "$ROOT_DIR" ];then
+    ROOT_DIR="./package"
+fi
+
+if [ -z "$DEST_DIR" ];then
+    if ! adb remount > /dev/null 2>&1; then
+        echo "can't remount, root required to install Avender the android firewall, abort!"
+        exit -1;
+    fi
+fi
+
+if [ "$UNINSTALL" = "yes" ];then
+    adb shell "lotus -c -s off" > /dev/null
+    adb shell ps | tr -d "\r" | grep -v USER | awk '{print $2 "@" $9}' | grep "avender" | while read i;
+    do
+	    echo -n  "Killing ${i#*@}(${i%%@*})..";
+	    adb shell kill -9 ${i%%@*} ; echo done
+    done
+fi
+
+echo ">>>>> update component files"
+cnt=${#FILE_LIST[*]};
+for (( i=0; ((i < cnt)); ((i++)) ));
+do
+    if [ "$UNINSTALL" = "yes" ];then
+        case "${FILE_LIST[$i]}" in
+            /system/app/*)
+                echo "please uninstall ${FILE_LIST[$i]} manually from package manager"
+                ;;
+            *)
+                adb shell "[ -f ${FILE_LIST[$i]} ] && rm ${FILE_LIST[$i]}"  || exit -1
+                ;;
+        esac
+    elif [ -z "$DEST_DIR" ];then
+        echo -n "install ${FILE_LIST[$i]} ..."
+        case "${FILE_LIST[$i]}" in
+            /system/bin/*)
+                adb push "${ROOT_DIR}/${FILE_LIST[$i]}" "${FILE_LIST[$i]}" || exit -1
+                adb shell chmod 755 "${FILE_LIST[$i]}" || exit -1
+                ;;
+            /system/app/*)
+                adb install -r "${ROOT_DIR}/${FILE_LIST[$i]}" || exit -1
+                ;;
+            *)
+                adb push "${ROOT_DIR}/${FILE_LIST[$i]}" "${FILE_LIST[$i]}" || exit -1
+                ;;
+        esac
+    else
+        case "${FILE_LIST[$i]}" in
+            /system/bin/*)
+                install -D -m 755 -v "${ROOT_DIR}/${FILE_LIST[$i]}" "${DEST_DIR}${FILE_LIST[$i]}"
+                ;;
+            *)
+                install -D -m 644 -v "${ROOT_DIR}/${FILE_LIST[$i]}" "${DEST_DIR}${FILE_LIST[$i]}"
+                ;;
+        esac
+    fi
+done
+
+if [ "$UNINSTALL" = "yes" ];then
+    adb shell "[ -d /data/lavender ] && rm -r /data/lavender"
+elif [ ! -z "$DEST_DIR" ];then
+    install -D -m 755 -v $0 "${DEST_ROOT}/$0"
+    install -D -m 644 -v ./COPYING "${DEST_ROOT}/COPYING"
+    install -D -m 644 -v ./README "${DEST_ROOT}/README"
+    install -D -m 644 -v ./NEWS "${DEST_ROOT}/NEWS"
+    install -D -m 644 -v ./ChangeLog "${DEST_ROOT}/ChangeLog"
+else
+    # must have this directory, otherwise lavender won't init up and
+    # the front-end may also fail to listen to lavender stat service
+    # changes
+    adb shell "[ -d /data/lavender ] || mkdir /data/lavender"
+fi
+
+echo "<<<<< done"
+
+if [ ! -z "$DEST_DIR" ];then
+    tar czf "${DEST_ROOT}.tar.gz" "${DEST_ROOT}"
+    rm -rf "$DEST_ROOT"
+    tar tf "${DEST_ROOT}.tar.gz"
+    ./mkinstall.sh -o "./run-android-${VERSION}.sh" -p "./$(basename $DEST_ROOT)/install-android-sh" "${DEST_ROOT}.tar.gz"
+    exit 0;
+fi
+
+echo ">>>>> starting lavender service"
+if adb shell ps | grep -q lavender; then
+    echo "restarting lavender service"
+    adb shell lotus -S
+    # exit command is asynchrnous
+    sleep 1
+fi
+adb shell "lavender; sleep 1;"
+if adb shell ps | grep -q lavender; then
+    echo "<<<<< done"
+else
+    echo "<<<<< FAILED, check /data/lavender/log/lavender_main.log for details"
+    adb shell cat /data/lavender/log/lavender_main.log | tail
+    exit 1
+fi
+
+echo -e "\n>>>>> check lavender service configuration"
+INIT_TARGET_RC=$(tempfile)
+INIT_TARGET_RC_OUT=$(tempfile)
+SERVICE_DEF=$(tempfile)
+SERVICE_DEF_OLD=$(tempfile)
+
+cat > "$SERVICE_DEF" <<EOF
+#[LAVENDER BEGIN]
+on property:net.lavender.enable=1
+    start lavender
+
+service lavender /system/bin/lavender
+    class late_start
+    user root
+    oneshot
+    disabled
+
+on property:service.lavender.enable=1
+    start lavender
+#[LAVENDER END]
+EOF
+
+adb pull /init.target.rc $INIT_TARGET_RC > /dev/null 2>&1 || { echo "failing read init.target.rc, abort!" && exit -1 ; }
+sed -n '/#[LAVENDER BEGIN]/,/#[LAVENDER END]/p' "$INIT_TARGET_RC" > "$SERVICE_DEF_OLD"
+
+if cmp -s "$SERVICE_DEF" "$SERVICE_DEF_OLD";then
+    echo "<<<<< updated"
+    echo [ALL DONE]
+    rm -f "$INIT_TARGET_RC" "$INIT_TARGET_RC_OUT" "$SERVICE_DEF" "$SERVICE_DEF_OLD"
+    exit 0;
+else
+    sed '/#[LAVENDER BEGIN]/,/#[LAVENDER END]/d' "$INIT_TARGET_RC" > "$INIT_TARGET_RC_OUT"
+    echo >> "$INIT_TARGET_RC_OUT"
+    cat "$SERVICE_DEF" >> "$INIT_TARGET_RC_OUT"
+    echo "put the following lines into /init.target.rc"
+    echo ====================================================
+    cat "$SERVICE_DEF"
+    echo ====================================================
+fi
+
+echo -e ">>>>> end"
+echo [ALL DONE]
+#  TODO: update lavender servce config into device
+rm -f "$INIT_TARGET_RC_OUT" "$SERVICE_DEF" "$SERVICE_DEF_OLD"  "$INIT_TARGET_RC" > /dev/null 2>&1

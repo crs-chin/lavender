@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="2"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <ListView
+            android:id="@+id/verdict_objs"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" >
+        </ListView>
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/not_again"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:onClick="onNotAgainClick"
+        android:text="@string/not_again" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="14dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_allow"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onAllowClick"
+            android:text="@string/button_allow" />
+
+        <Button
+            android:id="@+id/button_deny"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onDenyClick"
+            android:text="@string/button_deny" />
+
+        <Button
+            android:id="@+id/button_kill"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:onClick="onKillClick"
+            android:text="@string/button_kill" />
+
+    </LinearLayout>
+
+</LinearLayout>
