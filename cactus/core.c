@@ -1010,9 +1010,10 @@ static int nfct_handler(nfct_t *ct, nfct_msg *msg, void *ud)
     list fos = LIST_HEAD_INIT(fos);
 
     if(! nfct_filtered(msg))  {
-        if((sk = lookup_sk_from_ct(msg)) && ! lookup_fos_from_sk(&fos, sk))
+        /* fw table rely on IPCTNL_MSG_CT_DELETE to do GC */
+        if(((sk = lookup_sk_from_ct(msg)) && ! lookup_fos_from_sk(&fos, sk))
+           || (msg->type == IPCTNL_MSG_CT_DELETE))
             fw_table_conn_changed(msg, sk, &fos);
-
         __LOG_CONNTRACK(msg, &fos);
         if(sk)
             sk_entry_free(sk);

@@ -1571,8 +1571,7 @@ static void __conn_update(conn_entry *e, sk_entry *sk, list *fos)
     }
 }
 
-
-static int proc_validate(pid_t pid, ino_t ino)
+static inline int proc_validate(pid_t pid, ino_t ino)
 {
     struct stat st;
     char path[30];
