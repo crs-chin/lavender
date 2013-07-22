@@ -16,8 +16,6 @@ CACTUS TODO:
 21. misc proto handling for incoming and outgoing.
    1. udplite, icmp, dccp, sctp
    2. proto table for enabled/disabled state.
-24. flush back logs intervally <-- mode config not suitable for object log.
-* 27. impl. lotus shell for lavender.
 30. desktop kernel not work, should be due to zone enabled and set to
    update mark, and successfully updated, but ack flag not set, so no
    ack returned, <-- verify.
@@ -29,7 +27,6 @@ CACTUS TODO:
 * 41. more lavender state to be save in rule list db.
 * 43. many extended API and client API not fully implemented.
 * 44. execute command through lotus shell.
-* 45. looks like proc entries won't be auto cleared, impl. GC.
 
 android porting:
 * 37. verdict request under screenlock

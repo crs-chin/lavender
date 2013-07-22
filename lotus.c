@@ -332,7 +332,7 @@ static void on_verdict_req(const msg_verdict_req *req)
     if(req->ts.tv_nsec - ts.tv_nsec > 500000000)
         timeout++;
 
-    printf("\n[%u]. VERDICT REQUEST, ID:%llu, TIMEOUT:%d\n", seq++, req->id, timeout);
+    printf("\n[%u]  VERDICT REQUEST, ID:%llu, TIMEOUT:%d\n", seq++, req->id, timeout);
     msg_fd_owner_for_each(fo, req)  {
         printf("    UID:%u, PID:%u, EXE:%s\n", fo->euid, fo->pid, fo->exe);
         sz += sizeof(*fo) + strlen(fo->exe) + 1;
@@ -410,9 +410,9 @@ static void list_verd(void)
             timeout = -1;
 
         if(timeout > 0)
-            printf("[%u]. VERDICT REQUEST, ID:%llu, TIMEOUT:%d\n", seq++, req->id, timeout);
+            printf("[%u]  VERDICT REQUEST, ID:%llu, TIMEOUT:%d\n", seq++, req->id, timeout);
         else
-            printf("[%u]. VERDICT REQUEST, ID:%llu, OUTDATED\n", seq++, req->id);
+            printf("[%u]  VERDICT REQUEST, ID:%llu, OUTDATED\n", seq++, req->id);
         msg_fd_owner_for_each(fo, req)  {
             printf("    UID:%u, PID:%u, EXE:%s\n", fo->euid, fo->pid, fo->exe);
         }list_end;
@@ -461,7 +461,7 @@ static void list_prog(char *args[])
     printf("INDEX UID        ACTION          PATH\n");
     list_for_each_entry(obj, &progs, list)  {
         res = &obj->prog[0];
-        printf("[%d].  %-10u %-15s %s\n", seq++, res->uid, action_string(res->action), res->path);
+        printf("[%d]   %-10u %-15s %s\n", seq++, res->uid, action_string(res->action), res->path);
     }
     fw_objs_free(&progs);
 }
@@ -492,7 +492,7 @@ static void list_user(char *args[])
     printf("INDEX UID        NAME\n");
     list_for_each_entry(obj, &users, list)  {
         res = &obj->user[0];
-        printf("[%d].  %-10u %s\n", seq++, res->uid, res->name);
+        printf("[%d]   %-10u %s\n", seq++, res->uid, res->name);
     }
     fw_objs_free(&users);
 }
@@ -541,7 +541,7 @@ static void list_proc(char *args[])
     printf("INDEX PID      UID      ACTION       PATH\n");
     list_for_each_entry(obj, &procs, list)  {
         res = &obj->proc[0];
-        printf("[%d].  %-8u %-8u %-12s %s\n",
+        printf("[%d]   %-8u %-8u %-12s %s\n",
                seq++, res->pid, res->uid, action_string(res->action), res->exe);
     }
     fw_objs_free(&procs);
@@ -745,7 +745,7 @@ static void cmd_list(char *args[], const command_desc *cd)
     }else if(! strcasecmp(cmd, "conn"))  {
         list_conn(args + 1);
     }else  {
-        printf("Unrecognized command argument:\"%s\", abort!\n", cmd);
+        printf("Unrecognized command argument \"%s\", abort!\n", cmd);
     }
 }
 
