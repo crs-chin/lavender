@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,11 +27,17 @@
 #include <getopt.h>
 #include <pthread.h>
 #include <time.h>
+#include <arpa/inet.h>
 #ifndef ANDROID_CHANGES
 #include <readline/readline.h>
 #include <readline/history.h>
+#else
+/* not defined on android */
+enum  {
+    IPPROTO_UDPLITE = 136, /* UDP-Lite protocol.  */
+#define IPPROTO_UDPLITE		IPPROTO_UDPLITE
+};
 #endif
-#include <ctype.h>
 
 #include "desert.h"
 
@@ -419,10 +425,10 @@ static const char *action_string(int action)
     int target = ACTION_TARGET(action);
     int verdict = ACTION_VERDICT(action);
 
-    if(target < 0 || target >= arraysize(target_tbl))
+    if(target < 0 || (unsigned)target >= arraysize(target_tbl))
         return "<INVALID ACTION>";
     if(target == FW_VERDICT)  {
-        if(verdict < 0 || verdict >= arraysize(verdict_tbl))
+        if(verdict < 0 || (unsigned)verdict >= arraysize(verdict_tbl))
             return "<INVALID VERDICT>";
         return verdict_tbl[verdict];
     }
@@ -823,7 +829,7 @@ static void get_logtype(char *args[])
     }
 
     if(strcasecmp(parm, "all"))  {
-        for(i = 0; i < arraysize(log_tbl); i++)  {
+        for(i = 0; i < (int)arraysize(log_tbl); i++)  {
             if(! strcasecmp(log_tbl[i], parm))  {
                 type = i;
                 break;
@@ -861,7 +867,7 @@ static void get_loglevel(char *args[])
     }
 
     if(strcasecmp(parm, "all"))  {
-        for(i = 0; i < arraysize(level_tbl); i++)  {
+        for(i = 0; i < (int)arraysize(level_tbl); i++)  {
             if(! strcasecmp(level_tbl[i], parm))  {
                 lvl = i;
                 break;
@@ -955,7 +961,7 @@ static void set_logtype(char *args[])
     }
 
     if(strcasecmp(args[0], "all"))  {
-        for(i = 0; i < arraysize(log_tbl); i++)  {
+        for(i = 0; i < (int)arraysize(log_tbl); i++)  {
             if(! strcasecmp(log_tbl[i], args[0]))  {
                 type = i;
                 break;
@@ -995,7 +1001,7 @@ static void set_loglevel(char *args[])
     }
 
     if(strcasecmp(args[0], "all"))  {
-        for(i = 0; i < arraysize(level_tbl); i++)  {
+        for(i = 0; i < (int)arraysize(level_tbl); i++)  {
             if(! strcasecmp(level_tbl[i], args[0]))  {
                 lvl = i;
                 break;
@@ -1055,7 +1061,7 @@ static void set_state(char *args[])
     }
 
     if((err = desert_switch_cactus(st)))  {
-        printf("Error switching cactus status(%d)!\n");
+        printf("Error switching cactus status(%d)!\n", err);
         return;
     }
 
@@ -1109,7 +1115,8 @@ static char **tokenize(char ***toks, size_t *sz, char *str)
     char *p, **t, **_toks;
     int quoted = 0;
     int squoted = 0;
-    int space, cnt = 0;
+    int space;
+    size_t cnt = 0;
 
     if(! *toks || ! *sz)  {
         *toks = (char **)malloc(sizeof(char *) * TOKS_MIN);
