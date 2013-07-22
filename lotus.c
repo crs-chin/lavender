@@ -37,7 +37,6 @@
 
 #define ERROR(fmt,args...) do{fprintf(stderr, fmt "\n", ##args); exit(-1);}while(0)
 #define ERROR_RET(err,fmt,args...) do{fprintf(stderr, fmt "\n", ##args); return err;}while(0)
-#define ARRAYSIZE(a)  (sizeof(a)/sizeof(a[0]))
 
 #define TOKS_MIN 10
 
@@ -53,7 +52,7 @@ struct _verdict_record{
 
 struct _command_desc{
     char *cmd;
-    char *help;
+    char *desc;
     void (*func)(char *args[], const command_desc *cmd);
     const char *(*get_help)(const char *cmd);
 };
@@ -89,15 +88,15 @@ static void cmd_rule(char *args[], const command_desc *cmd);
 static const char *get_help(const char *cmd);
 
 static const command_desc cmd_tbl[] = {
-    {"list", NULL, cmd_list, get_help},
-    {"verd", NULL, cmd_verd, get_help},
-    {"exit", "  exit command shell", cmd_exit, NULL},
-    {"get", NULL, cmd_get, get_help},
-    {"set", NULL, cmd_set, get_help},
-    {"shutdown", "  shutdown lavender service", cmd_shutdown, NULL},
-    {"flush", "  flush lavender service logs", cmd_flush, NULL},
-    {"rule", NULL, cmd_rule, get_help},
-    {"help", "  show this message", cmd_help, NULL},
+    {"list", "list fw objects and etc.", cmd_list, get_help},
+    {"verd", "verdict the request", cmd_verd, get_help},
+    {"exit", "exit command shell", cmd_exit, NULL},
+    {"get", "get lavender specific config or state", cmd_get, get_help},
+    {"set", "set lavender specific config or state", cmd_set, get_help},
+    {"shutdown", "shutdown lavender service and exit", cmd_shutdown, NULL},
+    {"flush", "flush lavender service logs", cmd_flush, NULL},
+    {"rule", "control lavender service logs", cmd_rule, get_help},
+    {"help", "show help message", cmd_help, NULL},
     {NULL, NULL, NULL, NULL},
 };
 
@@ -133,6 +132,14 @@ static const char *verdict_tbl[] = {
     "KILL",
 };
 
+static const char *log_tbl[] = {
+    "main", "rtnl", "uevent", "conntrack",
+};
+
+static const char *level_tbl[] = {
+    "debug", "info", "warn", "emerg", "error", "fatal",
+};
+
 enum{
     CMD_NONE,
     CMD_LOAD,
@@ -144,6 +151,7 @@ enum{
     CMD_CACTUS_CONTROL,
     CMD_SHUTDOWN,
     CMD_FRONT_END,
+    CMD_COMMAND,
     CMD_VERSION,
     CMD_TEST,
 };
@@ -162,6 +170,7 @@ static void help(const char *prog)
            "  -h|--help         Show this help message\n"
            "  -S|--shutdown     Shutdown Cactus Runtime\n"
            "  -t|--front-end    Run in front-end mode\n"
+           "  -C|--command      Run lotus shell command\n"
            "  -v|--version      Show version info\n"
            "TYPE: main, rtnl, uevent, conntrack, all\n"
            "LVL: debug, info, warn, emerg, error, fatal, all\n"
@@ -179,37 +188,92 @@ static const char *get_help(const char *cmd)
 {
     const char *msg = "  <no help message>";
 
-    if(! strcmp(cmd, "list"))  {
-        msg = "  list Cactus fw objects:\n"
+    if(! strcasecmp(cmd, "list"))  {
+        msg = "  list Cactus fw objects\n"
             "    list [ARGUMENTS]\n"
             "  ARGUMENTS:\n"
             "    verd               show pending verdicts\n"
             "    prog  [OPT]        show fw recorded progs\n"
             "     OPT:\n"
             "     active            show only active progs\n"
-            "    proc  [OPT]        show fw recorded processes\n"
+            "    proc  <OPT>        show fw recorded processes\n"
             "     OPT:\n"
             "     prog <PATH>       show processes of prog specified\n"
             "     user <UID>        show processes of uid specified\n"
             "    user  [OPT]        show fw recorded users\n"
             "     OPT:\n"
             "     active            show only active users\n"
-            "    conn [OPT]         show fw recorded connections\n"
+            "    conn <OPT>         show fw recorded connections\n"
             "     OPT:\n"
             "     proc <PID>        show connections of pid specified\n"
             "     prog <PATH> <UID> show connections of prog specified\n"
             "     user <UID>        show connections of uid specified";
-    }else if(! strcmp(cmd, "verd"))  {
-        msg = "  verdict the last verdict request:\n"
+    }else if(! strcasecmp(cmd, "verd"))  {
+        msg = "  verdict the last verdict request\n"
             "    verd [TARGET]\n"
             "  TARGET:\n"
-            "  none            silently ignore this verdict\n"
-            "  allow           allow for this time\n"
-            "  allow_always    allow always\n"
-            "  deny            deny for this time\n"
-            "  deny_always     deny always\n"
-            "  kill            kill for this time\n"
-            "  kill_always     always kill";
+            "    none               silently ignore this verdict\n"
+            "    allow              allow for this time\n"
+            "    allow_always       allow always\n"
+            "    deny               deny for this time\n"
+            "    deny_always        deny always\n"
+            "    kill               kill for this time\n"
+            "    kill_always        always kill";
+    }else if(! strcasecmp(cmd, "get"))  {
+        msg = "  get lavender service config and state\n"
+            "    get [ARGUMENTS]\n"
+            "  ARGUMENTS:\n"
+            "    logtype <TYPE>     show log type enable status\n"
+            "     TYPE:\n"
+            "     main, rtnl, uevent, conntrack, all\n"
+            "    loglevel <LEVEL>   show log level enable status\n"
+            "     LEVEL:\n"
+            "     debug, info, warn, emerg, error, fatal, all\n"
+            "    action <OBJ>       show fw object rule action\n"
+            "     OBJ:\n"
+            "     proc <PID>        show proc object rule action\n"
+            "     prog <PATH> <UID> show prog object rule action\n"
+            "    throttle <OBJ>     show fw object throttle status\n"
+            "     OBJ:\n"
+            "     conn <CONN_ID>    show connection throttle status\n"
+            "     proc <PID>        show proc throttle status\n"
+            "     prog <PATH> <UID> show prog throttle status\n"
+            "    counter <OBJ>      show fw object conntrack counter info\n"
+            "     OBJ:\n"
+            "     conn <CONN_ID>    show connection counter info\n"
+            "     proc <PID>        show proc counter info\n"
+            "     prog <PATH> <UID> show prog counter info\n"
+            "     user <UID>        show user counter info\n"
+            "    state              show current cactus status\n"
+            "    version            show service version info";
+    }else if(! strcasecmp(cmd, "set"))  {
+        msg = "  set lavender service config and state\n"
+            "    set [ARGUMENTS]\n"
+            "  ARGUMENTS:\n"
+            "    state <on|off>            set cactus status on or off\n"
+            "    logtype <TYPE> <on|off>   set log type on or off\n"
+            "     TYPE:\n"
+            "     main, rtnl, uevent, conntrack, all\n"
+            "    loglevel <LEVEL> <on|off> set log level on or off\n" 
+            "     LEVEL:\n"
+            "     debug, info, warn, emerg, error, fatal, all\n"
+            "    action <OBJ> <ACT>        set fw object rule action\n"
+            "     OBJ:\n"
+            "     proc <PID>               set proc object rule action\n"
+            "     prog <PATH> <UID>        set prog object rule action\n"
+            "     ACT:\n"
+            "     allow, allow_always, deny, deny_always, kill, kill_always\n"
+            "    throttle <OBJ> <on|off>   set fw object throttle status\n"
+            "     OBJ:\n"
+            "     conn <CONN_ID>           set connection throttle status\n"
+            "     proc <PID>               set proc throttle status\n"
+            "     prog <PATH> <UID>        set prog throttle status";
+    }else if(! strcasecmp(cmd, "rule"))  {
+        msg = "  control lavender service rule dbase\n"
+            "    rule [ARGUMENTS]\n"
+            "  ARGUMENTS:\n"
+            "    dump <PATH>    dump rules to path\n"
+            "    load <PATH>    load rules from path";
     }
 
     return msg;
@@ -690,11 +754,12 @@ static void cmd_verd(char *args[], const command_desc *cd)
         return;
     }
 
-    for(i = 0; i < ARRAYSIZE(verdict_cmd); i++)  {
+    /* TODO: more argument handling */
+    for(i = 0; i < arraysize(verdict_cmd); i++)  {
         if(! strcasecmp(cmd, verdict_cmd[i].cmd))
             break;
     }
-    if(i == ARRAYSIZE(verdict_cmd))  {
+    if(i == arraysize(verdict_cmd))  {
         printf("Invalid verdict target!\n");
         return;
     }
@@ -723,37 +788,320 @@ static void cmd_help(char *args[], const command_desc *cd)
     const command_desc *c = cmd_tbl;
     char *cmd = args[0];
 
+    if(! cmd || ! *cmd)  {
+        printf("Available commands:\n");
+        while(c->cmd)  {
+            printf("    %-15s    %s\n", c->cmd, c->desc);
+            c++;
+        }
+        return;
+    }
+
     while(c->cmd)  {
-        if(! cmd || ! *cmd || ! strcmp(cmd, c->cmd))
-            printf("%s:\n%s\n", c->cmd,
-                   c->help ? : (c->get_help ? c->get_help(c->cmd) : "<no help message>"));
+        if(! strcasecmp(cmd, c->cmd))  {
+            if(! c->get_help)  {
+                printf("%s:\n\t%s\n", c->cmd, c->desc);
+            }else  {
+                printf("%s:\n%s\n", c->cmd, c->get_help(c->cmd));
+            }
+            return;
+        }
         c++;
+    }
+    printf("Command \"%s\" unrecognized!\n", cmd);
+}
+
+static void get_logtype(char *args[])
+{
+    char *parm = args[0];
+    int i, type = -1, err;
+    msg_log_stat st;
+
+    if(! parm || ! *parm)  {
+        printf("Logtype argument required!\n");
+        return;
+    }
+
+    if(strcasecmp(parm, "all"))  {
+        for(i = 0; i < arraysize(log_tbl); i++)  {
+            if(! strcasecmp(log_tbl[i], parm))  {
+                type = i;
+                break;
+            }
+        }
+        if(i == -1)  {
+            printf("Unknown log type \"%s\"!\n", parm);
+            return;
+        }
+    }
+
+    if((err = desert_log_state(&st)))  {
+        printf("Fail to get log state(%d)!\n", err);
+        return;
+    }
+
+    if(type != -1)  {
+        printf("%-10s : %s\n", log_tbl[type], st.ctl[type] ? "ENABLED" : "DISABLED");
+        return;
+    }
+
+    for(i = 0; i < NUM_LOG; i++)
+        printf("%-10s : %s\n", log_tbl[i], st.ctl[i] ? "ENABLED" : "DISABLED");
+}
+
+static void get_loglevel(char *args[])
+{
+    char *parm = args[0];
+    int i, lvl = -1, err;
+    msg_log_stat st;
+
+    if(! parm || ! *parm)  {
+        printf("Loglevel argument required!\n");
+        return;
+    }
+
+    if(strcasecmp(parm, "all"))  {
+        for(i = 0; i < arraysize(level_tbl); i++)  {
+            if(! strcasecmp(level_tbl[i], parm))  {
+                lvl = i;
+                break;
+            }
+        }
+        if(i == -1)  {
+            printf("Unknown log level \"%s\"!\n", parm);
+            return;
+        }
+    }
+
+    if((err = desert_log_state(&st)))  {
+        printf("Fail to get log state(%d)!\n", err);
+        return;
+    }
+
+    if(lvl != -1)  {
+        printf("%-10s : %s\n", level_tbl[lvl], st.mask[lvl] ? "ENABLED" : "DISABLED");
+        return;
+    }
+
+    for(i = 0; i < NUM_LVL; i++)
+        printf("%-10s : %s\n", level_tbl[i], st.mask[i] ? "ENABLED" : "DISABLED");
+}
+
+static void get_action(char *args[])
+{
+    printf("TODO:\n");
+}
+
+static void get_throttle(char *args[])
+{
+    printf("TODO:\n");
+}
+
+static void get_counter(char *args[])
+{
+    printf("TODO:\n");
+}
+
+static void cmd_get(char *args[], const command_desc *cd)
+{
+    char *cmd = args[0];
+
+    if(! cmd || ! *cmd)  {
+        printf("Argument required!\n");
+        return;
+    }
+
+    if(! strcasecmp(cmd, "logtype"))  {
+        get_logtype(args + 1);
+    }else if(! strcasecmp(cmd, "loglevel"))  {
+        get_loglevel(args + 1);
+    }else if(! strcasecmp(cmd, "action"))  {
+        get_action(args + 1);
+    }else if(! strcasecmp(cmd, "throttle"))  {
+        get_throttle(args + 1);
+    }else if(! strcasecmp(cmd, "counter"))  {
+        get_counter(args + 1);
+    }else if(! strcasecmp(cmd, "state"))  {
+        char *st_str = "UNKNOWN";
+        int st = desert_cactus_status();
+
+        if(st == CACTUS_ACTIVE)
+            st_str = "ACTIVE";
+        else if(st == CACTUS_INACTIVE)
+            st_str = "INACTIVE";
+
+        printf("Cactus status: %s\n", st_str);
+    }else if(! strcasecmp(cmd, "version"))  {
+        const char *ver;
+        int num;
+
+        if((ver = desert_cactus_version(&num)))  {
+            printf("%sVERSION(%X)\n", ver, num);
+        }else  {
+            printf("Unable to get version info!\n");
+        }
+    }else  {
+        printf("Unrecognized argument \"%s\"!\n", cmd);
     }
 }
 
-static void cmd_get(char *args[], const command_desc *cmd)
+static void set_logtype(char *args[])
 {
-    /* TODO: */
+    int i, type = -1, st, err;
+
+    if(! args[0] || ! args[0][0] || ! args[1] || ! args[1][0])  {
+        printf("Logtype argument required!\n");
+        return;
+    }
+
+    if(strcasecmp(args[0], "all"))  {
+        for(i = 0; i < arraysize(log_tbl); i++)  {
+            if(! strcasecmp(log_tbl[i], args[0]))  {
+                type = i;
+                break;
+            }
+        }
+        if(i == -1)  {
+            printf("Unknown log type \"%s\"!\n", args[0]);
+            return;
+        }
+    }
+
+    if(! strcasecmp(args[1], "on"))  {
+        st = 1;
+    }else if(! strcasecmp(args[1], "off"))  {
+        st = 0;
+    }else  {
+        printf("Invalid state spec \"%s\"!\n", args[1]);
+        return;
+    }
+
+    if((err = desert_log_set_type_enabled(type, st)))  {
+        printf("Fail to enable/disable log type(%d)!\n", err);
+        return;
+    }
+
+    printf("Successfully %s log type \"%s.\n",
+           st ? "enabled" : "disabled", args[0]);
 }
 
-static void cmd_set(char *args[], const command_desc *cmd)
+static void set_loglevel(char *args[])
 {
+    int i, lvl = -1, st, err;
 
+    if(! args[0] || ! args[0][0] || ! args[1] || ! args[1][0])  {
+        printf("Loglevel argument required!\n");
+        return;
+    }
+
+    if(strcasecmp(args[0], "all"))  {
+        for(i = 0; i < arraysize(level_tbl); i++)  {
+            if(! strcasecmp(level_tbl[i], args[0]))  {
+                lvl = i;
+                break;
+            }
+        }
+        if(i == -1)  {
+            printf("Unknown log type \"%s\"!\n", args[0]);
+            return;
+        }
+    }
+
+    if(! strcasecmp(args[1], "on"))  {
+        st = 1;
+    }else if(! strcasecmp(args[1], "off"))  {
+        st = 0;
+    }else  {
+        printf("Invalid state spec \"%s\"!\n", args[1]);
+        return;
+    }
+
+    if((err = desert_log_set_level_enabled(lvl, st)))  {
+        printf("Fail to enable/disable log level(%d)!\n", err);
+        return;
+    }
+
+    printf("Successfully %s log level \"%s.\n",
+           st ? "enabled" : "disabled", args[0]);
 }
 
-static void cmd_shutdown(char *args[], const command_desc *cmd)
+static void set_action(char *args[])
 {
-
+    printf("TODO:\n");
 }
 
-static void cmd_flush(char *args[], const command_desc *cmd)
+static void set_throttle(char *args[])
 {
-
+    printf("TODO:\n");
 }
 
-static void cmd_rule(char *args[], const command_desc *cmd)
+static void set_state(char *args[])
 {
+    char *parm = args[0];
+    int st, err;
 
+    if(! parm || ! *parm)  {
+        printf("Argument required!\n");
+        return;
+    }
+
+    if(! strcasecmp(parm, "on"))  {
+        st = 1;
+    }else if(! strcasecmp(parm, "off"))  {
+        st = 0;
+    }else  {
+        printf("Invalid state spec \"%s\"!\n", parm);
+        return;
+    }
+
+    if((err = desert_switch_cactus(st)))  {
+        printf("Error switching cactus status(%d)!\n");
+        return;
+    }
+
+    printf("Cactus status switched %s.\n", st ? "ACTIVE" : "INACTIVE");
+}
+
+static void cmd_set(char *args[], const command_desc *cd)
+{
+    char *cmd = args[0];
+
+    if(! cmd || ! *cmd)  {
+        printf("Argument required!\n");
+        return;
+    }
+
+    if(! strcasecmp(cmd, "logtype"))  {
+        set_logtype(args + 1);
+    }else if(! strcasecmp(cmd, "loglevel"))  {
+        set_loglevel(args + 1);
+    }else if(! strcasecmp(cmd, "action"))  {
+        set_action(args + 1);
+    }else if(! strcasecmp(cmd, "state"))  {
+        set_state(args + 1);
+    }else if(! strcasecmp(cmd, "throttle"))  {
+        set_throttle(args + 1);
+    }else  {
+        printf("Unrecognized argument \"%s\"!\n", cmd);
+    }
+}
+
+static void cmd_shutdown(char *args[], const command_desc *cd)
+{
+    desert_shutdown();
+    printf("Done.\n");
+    exit(0);
+}
+
+static void cmd_flush(char *args[], const command_desc *cd)
+{
+    desert_flush_logs();
+    printf("Done.\n");
+}
+
+static void cmd_rule(char *args[], const command_desc *cd)
+{
+    printf("TODO:\n");
 }
 
 static char **tokenize(char ***toks, size_t *sz, char *str)
@@ -832,7 +1180,7 @@ static void dispatch_cmd(char **toks)
 static void front_end(void)
 {
     char prompt[50], *cmd = NULL;
-    char **toks = NULL;
+    char **toks = NULL, *sharp;
     size_t sz = 0;
     int err;
 
@@ -859,6 +1207,10 @@ static void front_end(void)
         if(! (cmd = fgets(buf, sizeof(buf), stdin)))
             return;
 #endif
+        /* make '#' as start of comment */
+        if((sharp = strchr(cmd, '#')))
+            *sharp = '\0';
+
         if(! tokenize(&toks, &sz, cmd))  {
             printf("Malformated command & arguments!\n");
             continue;
@@ -873,7 +1225,7 @@ int main(int argc, char *argv[])
 {
     int cmd = CMD_NONE;
     int c, idx, log = -1, lvl = -1, stat = 0, ver_num;
-    char *arg = NULL;
+    char *arg = NULL, *command = NULL;
     int err = -1;
     size_t i;
     const char *ver;
@@ -889,20 +1241,14 @@ int main(int argc, char *argv[])
         {"help", 0, NULL, 'h'},
         {"shutdown", 0, NULL, 'S'},
         {"front-end", 0, NULL, 't'},
+        {"command", 1, NULL, 'C'},
         {"version", 0, NULL, 'v'},
         {"test", 1, NULL, 'T'},
         {NULL, 0, NULL, 0}
     };
-    static const char *log_tbl[] = {
-        "main", "rtnl", "uevent", "conntrack",
-    };
-
-    static const char *level_tbl[] = {
-        "debug", "info", "warn", "emerg", "error", "fatal",
-    };
 
     for(;;)  {
-        c = getopt_long(argc, argv, "l:fd:us:g:cL:hStvT:", opts, &idx);
+        c = getopt_long(argc, argv, "l:fd:us:g:cL:hStC:vT:", opts, &idx);
         if(-1 == c)
             break;
 
@@ -935,7 +1281,7 @@ int main(int argc, char *argv[])
             SET_CMD(LOG_CONTROL);
             if(! optarg)
                 ERROR("Log name required.");
-            for(i = 0; i < ARRAYSIZE(log_tbl); i++)  {
+            for(i = 0; i < arraysize(log_tbl); i++)  {
                 if(! strcasecmp(log_tbl[i], optarg))  {
                     log = i;
                     break;
@@ -953,7 +1299,7 @@ int main(int argc, char *argv[])
             SET_CMD(LEVEL_CONTROL);
             if(! optarg)
                 ERROR("Level name required.");
-            for(i = 0; i < ARRAYSIZE(level_tbl); i++)  {
+            for(i = 0; i < arraysize(level_tbl); i++)  {
                 if(! strcasecmp(level_tbl[i], optarg))  {
                     lvl = i;
                     break;
@@ -972,6 +1318,12 @@ int main(int argc, char *argv[])
             break;
         case 't':
             SET_CMD(FRONT_END);
+            break;
+        case 'C':
+            SET_CMD(COMMAND);
+            if(! optarg)
+                ERROR("Argument required.");
+            command = optarg;
             break;
         case 'v':
             SET_CMD(VERSION);
@@ -1023,6 +1375,10 @@ int main(int argc, char *argv[])
             break;
         case CMD_FRONT_END:
             front_end();
+            err = 0;
+            break;
+        case CMD_COMMAND:
+            /* TODO: */
             err = 0;
             break;
         case CMD_VERSION:
