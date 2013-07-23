@@ -84,7 +84,11 @@ static void notify_msg(const char *sum, const char *body, const char *icon)
     NotifyNotification *noti = status_noti;
 
     if(! noti)  {
+#if HAVE_NOTIFY_NOTIFICATION_NEW_WITH_STATUS_ICON
         noti = notify_notification_new_with_status_icon(sum, body, icon, status_icon);
+#else
+        noti = notify_notification_new(sum, body, icon);
+#endif
         status_noti = noti;
     }else  {
         notify_notification_update(noti, sum, body, icon);
@@ -386,6 +390,11 @@ int main(int argc, char *argv[])
 
     if(desert_gtk_init(&argc, &argv, LAVENDER_GTK_UI, on_verdict_res, NULL))  {
         g_printerr("fail to init desert GTK!\n");
+        return -1;
+    }
+
+    if(! notify_init(banner))  {
+        g_printerr("fail to init notify!\n");
         return -1;
     }
 

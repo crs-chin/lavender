@@ -61,6 +61,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
+/* Define to 1 if you have the `notify' library (-lnotify). */
+#define HAVE_LIBNOTIFY 1
+
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #define HAVE_LIBPTHREAD 1
 
@@ -91,6 +94,10 @@
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #define HAVE_NETINET_IN_H 1
+
+/* Define to 1 if you have the `notify_notification_new_with_status_icon'
+   function. */
+#define HAVE_NOTIFY_NOTIFICATION_NEW_WITH_STATUS_ICON 1
 
 /* Define to 1 if you have the `pipe2' function. */
 #define HAVE_PIPE2 1

@@ -19,6 +19,7 @@ AC_PROG_SED
 AC_CHECK_LIB([pthread], [pthread_create], ,[AC_MSG_ERROR([pthread lib check failed])])
 AC_CHECK_LIB([rt], [pthread_mutex_lock], ,[AC_MSG_ERROR([rt lib check failed])])
 AC_CHECK_LIB([z], [pthread_mutex_lock], ,[AC_MSG_ERROR([zlib check failed])])
+AC_CHECK_LIB([notify], [notify_notification_new], ,[AC_MSG_ERROR([notify check failed])])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
@@ -38,6 +39,7 @@ AC_TYPE_UINT64_T
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
+AC_CHECK_FUNCS([notify_notification_new_with_status_icon])
 AC_CHECK_FUNCS([bzero clock_gettime inet_ntoa memmove memset realpath regcomp select socket strdup strtol pipe2 getline readlinkat])
 AC_CHECK_MEMBER([struct ucred.pid], [AC_DEFINE([HAVE_ST_UCRED], 1, [have struct ucred defined])])
 
