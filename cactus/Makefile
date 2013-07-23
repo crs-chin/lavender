@@ -32,8 +32,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-unknown-linux-gnu
-host_triplet = x86_64-unknown-linux-gnu
+build_triplet = x86_64-pc-linux-gnu
+host_triplet = x86_64-pc-linux-gnu
 subdir = cactus
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -113,8 +113,8 @@ AUTOHEADER = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run automake-1.11
 AWK = gawk
 CC = gcc
-CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CCDEPMODE = depmode=none
+CFLAGS = -g -O2 -g -Wall -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -185,42 +185,42 @@ am__quote =
 am__tar = ${AMTAR} chof - "$$tardir"
 am__untar = ${AMTAR} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-unknown-linux-gnu
-build_alias = 
+build = x86_64-pc-linux-gnu
+build_alias = x86_64-linux-gnu
 build_cpu = x86_64
 build_os = linux-gnu
-build_vendor = unknown
+build_vendor = pc
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-unknown-linux-gnu
+host = x86_64-pc-linux-gnu
 host_alias = 
 host_cpu = x86_64
 host_os = linux-gnu
-host_vendor = unknown
+host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
-infodir = ${datarootdir}/info
+infodir = ${prefix}/share/info
 install_sh = ${SHELL} /home/chin/work/lavender-0.2.0/install-sh
 libdir = ${exec_prefix}/lib
-libexecdir = ${exec_prefix}/libexec
+libexecdir = ${prefix}/lib/lavender
 localedir = ${datarootdir}/locale
-localstatedir = ${prefix}/var
+localstatedir = /var
 lt_ECHO = echo
-mandir = ${datarootdir}/man
+mandir = ${prefix}/share/man
 mkdir_p = /bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
-sysconfdir = ${prefix}/etc
+sysconfdir = /etc
 target_alias = 
 top_build_prefix = ../
 top_builddir = ..
@@ -387,243 +387,243 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/libcactus_la-async_work.Plo
-include ./$(DEPDIR)/libcactus_la-branch.Plo
-include ./$(DEPDIR)/libcactus_la-cactus_be.Plo
-include ./$(DEPDIR)/libcactus_la-cactus_log.Plo
-include ./$(DEPDIR)/libcactus_la-core.Plo
-include ./$(DEPDIR)/libcactus_la-fd_lookup.Plo
-include ./$(DEPDIR)/libcactus_la-fw_table.Plo
-include ./$(DEPDIR)/libcactus_la-gardenia.Plo
-include ./$(DEPDIR)/libcactus_la-ginkgo.Plo
-include ./$(DEPDIR)/libcactus_la-ipclite.Plo
-include ./$(DEPDIR)/libcactus_la-ipclite_client.Plo
-include ./$(DEPDIR)/libcactus_la-ipclite_server.Plo
-include ./$(DEPDIR)/libcactus_la-kconf.Plo
-include ./$(DEPDIR)/libcactus_la-md5.Plo
-include ./$(DEPDIR)/libcactus_la-msg.Plo
-include ./$(DEPDIR)/libcactus_la-nfct.Plo
-include ./$(DEPDIR)/libcactus_la-nfq.Plo
-include ./$(DEPDIR)/libcactus_la-nfqm.Plo
-include ./$(DEPDIR)/libcactus_la-nl.Plo
-include ./$(DEPDIR)/libcactus_la-rpclite.Plo
-include ./$(DEPDIR)/libcactus_la-rtnl.Plo
-include ./$(DEPDIR)/libcactus_la-rule.Plo
-include ./$(DEPDIR)/libcactus_la-sig_handle.Plo
-include ./$(DEPDIR)/libcactus_la-sock_stat.Plo
-include ./$(DEPDIR)/libcactus_la-timer.Plo
-include ./$(DEPDIR)/libcactus_la-uevent.Plo
-include ./$(DEPDIR)/libcactus_la-util.Plo
+#include ./$(DEPDIR)/libcactus_la-async_work.Plo
+#include ./$(DEPDIR)/libcactus_la-branch.Plo
+#include ./$(DEPDIR)/libcactus_la-cactus_be.Plo
+#include ./$(DEPDIR)/libcactus_la-cactus_log.Plo
+#include ./$(DEPDIR)/libcactus_la-core.Plo
+#include ./$(DEPDIR)/libcactus_la-fd_lookup.Plo
+#include ./$(DEPDIR)/libcactus_la-fw_table.Plo
+#include ./$(DEPDIR)/libcactus_la-gardenia.Plo
+#include ./$(DEPDIR)/libcactus_la-ginkgo.Plo
+#include ./$(DEPDIR)/libcactus_la-ipclite.Plo
+#include ./$(DEPDIR)/libcactus_la-ipclite_client.Plo
+#include ./$(DEPDIR)/libcactus_la-ipclite_server.Plo
+#include ./$(DEPDIR)/libcactus_la-kconf.Plo
+#include ./$(DEPDIR)/libcactus_la-md5.Plo
+#include ./$(DEPDIR)/libcactus_la-msg.Plo
+#include ./$(DEPDIR)/libcactus_la-nfct.Plo
+#include ./$(DEPDIR)/libcactus_la-nfq.Plo
+#include ./$(DEPDIR)/libcactus_la-nfqm.Plo
+#include ./$(DEPDIR)/libcactus_la-nl.Plo
+#include ./$(DEPDIR)/libcactus_la-rpclite.Plo
+#include ./$(DEPDIR)/libcactus_la-rtnl.Plo
+#include ./$(DEPDIR)/libcactus_la-rule.Plo
+#include ./$(DEPDIR)/libcactus_la-sig_handle.Plo
+#include ./$(DEPDIR)/libcactus_la-sock_stat.Plo
+#include ./$(DEPDIR)/libcactus_la-timer.Plo
+#include ./$(DEPDIR)/libcactus_la-uevent.Plo
+#include ./$(DEPDIR)/libcactus_la-util.Plo
 
 .c.o:
-	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-#	source='$<' object='$@' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(COMPILE) -c $<
+#	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+#	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+#	source='$<' object='$@' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(COMPILE) -c $<
 
 .c.obj:
-	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-#	source='$<' object='$@' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+#	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+#	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+#	source='$<' object='$@' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 
 .c.lo:
-	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-#	source='$<' object='$@' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LTCOMPILE) -c -o $@ $<
+#	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+#	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+#	source='$<' object='$@' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LTCOMPILE) -c -o $@ $<
 
 libcactus_la-cactus_be.lo: cactus_be.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-cactus_be.lo -MD -MP -MF $(DEPDIR)/libcactus_la-cactus_be.Tpo -c -o libcactus_la-cactus_be.lo `test -f 'cactus_be.c' || echo '$(srcdir)/'`cactus_be.c
-	$(am__mv) $(DEPDIR)/libcactus_la-cactus_be.Tpo $(DEPDIR)/libcactus_la-cactus_be.Plo
-#	source='cactus_be.c' object='libcactus_la-cactus_be.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-cactus_be.lo `test -f 'cactus_be.c' || echo '$(srcdir)/'`cactus_be.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-cactus_be.lo -MD -MP -MF $(DEPDIR)/libcactus_la-cactus_be.Tpo -c -o libcactus_la-cactus_be.lo `test -f 'cactus_be.c' || echo '$(srcdir)/'`cactus_be.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-cactus_be.Tpo $(DEPDIR)/libcactus_la-cactus_be.Plo
+#	source='cactus_be.c' object='libcactus_la-cactus_be.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-cactus_be.lo `test -f 'cactus_be.c' || echo '$(srcdir)/'`cactus_be.c
 
 libcactus_la-cactus_log.lo: cactus_log.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-cactus_log.lo -MD -MP -MF $(DEPDIR)/libcactus_la-cactus_log.Tpo -c -o libcactus_la-cactus_log.lo `test -f 'cactus_log.c' || echo '$(srcdir)/'`cactus_log.c
-	$(am__mv) $(DEPDIR)/libcactus_la-cactus_log.Tpo $(DEPDIR)/libcactus_la-cactus_log.Plo
-#	source='cactus_log.c' object='libcactus_la-cactus_log.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-cactus_log.lo `test -f 'cactus_log.c' || echo '$(srcdir)/'`cactus_log.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-cactus_log.lo -MD -MP -MF $(DEPDIR)/libcactus_la-cactus_log.Tpo -c -o libcactus_la-cactus_log.lo `test -f 'cactus_log.c' || echo '$(srcdir)/'`cactus_log.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-cactus_log.Tpo $(DEPDIR)/libcactus_la-cactus_log.Plo
+#	source='cactus_log.c' object='libcactus_la-cactus_log.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-cactus_log.lo `test -f 'cactus_log.c' || echo '$(srcdir)/'`cactus_log.c
 
 libcactus_la-nfqm.lo: nfqm.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nfqm.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nfqm.Tpo -c -o libcactus_la-nfqm.lo `test -f 'nfqm.c' || echo '$(srcdir)/'`nfqm.c
-	$(am__mv) $(DEPDIR)/libcactus_la-nfqm.Tpo $(DEPDIR)/libcactus_la-nfqm.Plo
-#	source='nfqm.c' object='libcactus_la-nfqm.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nfqm.lo `test -f 'nfqm.c' || echo '$(srcdir)/'`nfqm.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nfqm.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nfqm.Tpo -c -o libcactus_la-nfqm.lo `test -f 'nfqm.c' || echo '$(srcdir)/'`nfqm.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-nfqm.Tpo $(DEPDIR)/libcactus_la-nfqm.Plo
+#	source='nfqm.c' object='libcactus_la-nfqm.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nfqm.lo `test -f 'nfqm.c' || echo '$(srcdir)/'`nfqm.c
 
 libcactus_la-rule.lo: rule.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-rule.lo -MD -MP -MF $(DEPDIR)/libcactus_la-rule.Tpo -c -o libcactus_la-rule.lo `test -f 'rule.c' || echo '$(srcdir)/'`rule.c
-	$(am__mv) $(DEPDIR)/libcactus_la-rule.Tpo $(DEPDIR)/libcactus_la-rule.Plo
-#	source='rule.c' object='libcactus_la-rule.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-rule.lo `test -f 'rule.c' || echo '$(srcdir)/'`rule.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-rule.lo -MD -MP -MF $(DEPDIR)/libcactus_la-rule.Tpo -c -o libcactus_la-rule.lo `test -f 'rule.c' || echo '$(srcdir)/'`rule.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-rule.Tpo $(DEPDIR)/libcactus_la-rule.Plo
+#	source='rule.c' object='libcactus_la-rule.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-rule.lo `test -f 'rule.c' || echo '$(srcdir)/'`rule.c
 
 libcactus_la-sig_handle.lo: sig_handle.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-sig_handle.lo -MD -MP -MF $(DEPDIR)/libcactus_la-sig_handle.Tpo -c -o libcactus_la-sig_handle.lo `test -f 'sig_handle.c' || echo '$(srcdir)/'`sig_handle.c
-	$(am__mv) $(DEPDIR)/libcactus_la-sig_handle.Tpo $(DEPDIR)/libcactus_la-sig_handle.Plo
-#	source='sig_handle.c' object='libcactus_la-sig_handle.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-sig_handle.lo `test -f 'sig_handle.c' || echo '$(srcdir)/'`sig_handle.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-sig_handle.lo -MD -MP -MF $(DEPDIR)/libcactus_la-sig_handle.Tpo -c -o libcactus_la-sig_handle.lo `test -f 'sig_handle.c' || echo '$(srcdir)/'`sig_handle.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-sig_handle.Tpo $(DEPDIR)/libcactus_la-sig_handle.Plo
+#	source='sig_handle.c' object='libcactus_la-sig_handle.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-sig_handle.lo `test -f 'sig_handle.c' || echo '$(srcdir)/'`sig_handle.c
 
 libcactus_la-core.lo: core.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-core.lo -MD -MP -MF $(DEPDIR)/libcactus_la-core.Tpo -c -o libcactus_la-core.lo `test -f 'core.c' || echo '$(srcdir)/'`core.c
-	$(am__mv) $(DEPDIR)/libcactus_la-core.Tpo $(DEPDIR)/libcactus_la-core.Plo
-#	source='core.c' object='libcactus_la-core.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-core.lo `test -f 'core.c' || echo '$(srcdir)/'`core.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-core.lo -MD -MP -MF $(DEPDIR)/libcactus_la-core.Tpo -c -o libcactus_la-core.lo `test -f 'core.c' || echo '$(srcdir)/'`core.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-core.Tpo $(DEPDIR)/libcactus_la-core.Plo
+#	source='core.c' object='libcactus_la-core.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-core.lo `test -f 'core.c' || echo '$(srcdir)/'`core.c
 
 libcactus_la-fd_lookup.lo: fd_lookup.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-fd_lookup.lo -MD -MP -MF $(DEPDIR)/libcactus_la-fd_lookup.Tpo -c -o libcactus_la-fd_lookup.lo `test -f 'fd_lookup.c' || echo '$(srcdir)/'`fd_lookup.c
-	$(am__mv) $(DEPDIR)/libcactus_la-fd_lookup.Tpo $(DEPDIR)/libcactus_la-fd_lookup.Plo
-#	source='fd_lookup.c' object='libcactus_la-fd_lookup.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-fd_lookup.lo `test -f 'fd_lookup.c' || echo '$(srcdir)/'`fd_lookup.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-fd_lookup.lo -MD -MP -MF $(DEPDIR)/libcactus_la-fd_lookup.Tpo -c -o libcactus_la-fd_lookup.lo `test -f 'fd_lookup.c' || echo '$(srcdir)/'`fd_lookup.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-fd_lookup.Tpo $(DEPDIR)/libcactus_la-fd_lookup.Plo
+#	source='fd_lookup.c' object='libcactus_la-fd_lookup.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-fd_lookup.lo `test -f 'fd_lookup.c' || echo '$(srcdir)/'`fd_lookup.c
 
 libcactus_la-fw_table.lo: fw_table.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-fw_table.lo -MD -MP -MF $(DEPDIR)/libcactus_la-fw_table.Tpo -c -o libcactus_la-fw_table.lo `test -f 'fw_table.c' || echo '$(srcdir)/'`fw_table.c
-	$(am__mv) $(DEPDIR)/libcactus_la-fw_table.Tpo $(DEPDIR)/libcactus_la-fw_table.Plo
-#	source='fw_table.c' object='libcactus_la-fw_table.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-fw_table.lo `test -f 'fw_table.c' || echo '$(srcdir)/'`fw_table.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-fw_table.lo -MD -MP -MF $(DEPDIR)/libcactus_la-fw_table.Tpo -c -o libcactus_la-fw_table.lo `test -f 'fw_table.c' || echo '$(srcdir)/'`fw_table.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-fw_table.Tpo $(DEPDIR)/libcactus_la-fw_table.Plo
+#	source='fw_table.c' object='libcactus_la-fw_table.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-fw_table.lo `test -f 'fw_table.c' || echo '$(srcdir)/'`fw_table.c
 
 libcactus_la-gardenia.lo: gardenia.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-gardenia.lo -MD -MP -MF $(DEPDIR)/libcactus_la-gardenia.Tpo -c -o libcactus_la-gardenia.lo `test -f 'gardenia.c' || echo '$(srcdir)/'`gardenia.c
-	$(am__mv) $(DEPDIR)/libcactus_la-gardenia.Tpo $(DEPDIR)/libcactus_la-gardenia.Plo
-#	source='gardenia.c' object='libcactus_la-gardenia.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-gardenia.lo `test -f 'gardenia.c' || echo '$(srcdir)/'`gardenia.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-gardenia.lo -MD -MP -MF $(DEPDIR)/libcactus_la-gardenia.Tpo -c -o libcactus_la-gardenia.lo `test -f 'gardenia.c' || echo '$(srcdir)/'`gardenia.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-gardenia.Tpo $(DEPDIR)/libcactus_la-gardenia.Plo
+#	source='gardenia.c' object='libcactus_la-gardenia.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-gardenia.lo `test -f 'gardenia.c' || echo '$(srcdir)/'`gardenia.c
 
 libcactus_la-ginkgo.lo: ginkgo.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ginkgo.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ginkgo.Tpo -c -o libcactus_la-ginkgo.lo `test -f 'ginkgo.c' || echo '$(srcdir)/'`ginkgo.c
-	$(am__mv) $(DEPDIR)/libcactus_la-ginkgo.Tpo $(DEPDIR)/libcactus_la-ginkgo.Plo
-#	source='ginkgo.c' object='libcactus_la-ginkgo.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ginkgo.lo `test -f 'ginkgo.c' || echo '$(srcdir)/'`ginkgo.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ginkgo.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ginkgo.Tpo -c -o libcactus_la-ginkgo.lo `test -f 'ginkgo.c' || echo '$(srcdir)/'`ginkgo.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-ginkgo.Tpo $(DEPDIR)/libcactus_la-ginkgo.Plo
+#	source='ginkgo.c' object='libcactus_la-ginkgo.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ginkgo.lo `test -f 'ginkgo.c' || echo '$(srcdir)/'`ginkgo.c
 
 libcactus_la-ipclite.lo: ipclite.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ipclite.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ipclite.Tpo -c -o libcactus_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
-	$(am__mv) $(DEPDIR)/libcactus_la-ipclite.Tpo $(DEPDIR)/libcactus_la-ipclite.Plo
-#	source='ipclite.c' object='libcactus_la-ipclite.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ipclite.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ipclite.Tpo -c -o libcactus_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-ipclite.Tpo $(DEPDIR)/libcactus_la-ipclite.Plo
+#	source='ipclite.c' object='libcactus_la-ipclite.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
 
 libcactus_la-ipclite_client.lo: ipclite_client.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ipclite_client.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ipclite_client.Tpo -c -o libcactus_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
-	$(am__mv) $(DEPDIR)/libcactus_la-ipclite_client.Tpo $(DEPDIR)/libcactus_la-ipclite_client.Plo
-#	source='ipclite_client.c' object='libcactus_la-ipclite_client.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ipclite_client.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ipclite_client.Tpo -c -o libcactus_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-ipclite_client.Tpo $(DEPDIR)/libcactus_la-ipclite_client.Plo
+#	source='ipclite_client.c' object='libcactus_la-ipclite_client.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
 
 libcactus_la-ipclite_server.lo: ipclite_server.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ipclite_server.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ipclite_server.Tpo -c -o libcactus_la-ipclite_server.lo `test -f 'ipclite_server.c' || echo '$(srcdir)/'`ipclite_server.c
-	$(am__mv) $(DEPDIR)/libcactus_la-ipclite_server.Tpo $(DEPDIR)/libcactus_la-ipclite_server.Plo
-#	source='ipclite_server.c' object='libcactus_la-ipclite_server.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ipclite_server.lo `test -f 'ipclite_server.c' || echo '$(srcdir)/'`ipclite_server.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-ipclite_server.lo -MD -MP -MF $(DEPDIR)/libcactus_la-ipclite_server.Tpo -c -o libcactus_la-ipclite_server.lo `test -f 'ipclite_server.c' || echo '$(srcdir)/'`ipclite_server.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-ipclite_server.Tpo $(DEPDIR)/libcactus_la-ipclite_server.Plo
+#	source='ipclite_server.c' object='libcactus_la-ipclite_server.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-ipclite_server.lo `test -f 'ipclite_server.c' || echo '$(srcdir)/'`ipclite_server.c
 
 libcactus_la-md5.lo: md5.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-md5.lo -MD -MP -MF $(DEPDIR)/libcactus_la-md5.Tpo -c -o libcactus_la-md5.lo `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
-	$(am__mv) $(DEPDIR)/libcactus_la-md5.Tpo $(DEPDIR)/libcactus_la-md5.Plo
-#	source='md5.c' object='libcactus_la-md5.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-md5.lo `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-md5.lo -MD -MP -MF $(DEPDIR)/libcactus_la-md5.Tpo -c -o libcactus_la-md5.lo `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-md5.Tpo $(DEPDIR)/libcactus_la-md5.Plo
+#	source='md5.c' object='libcactus_la-md5.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-md5.lo `test -f 'md5.c' || echo '$(srcdir)/'`md5.c
 
 libcactus_la-msg.lo: msg.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-msg.lo -MD -MP -MF $(DEPDIR)/libcactus_la-msg.Tpo -c -o libcactus_la-msg.lo `test -f 'msg.c' || echo '$(srcdir)/'`msg.c
-	$(am__mv) $(DEPDIR)/libcactus_la-msg.Tpo $(DEPDIR)/libcactus_la-msg.Plo
-#	source='msg.c' object='libcactus_la-msg.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-msg.lo `test -f 'msg.c' || echo '$(srcdir)/'`msg.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-msg.lo -MD -MP -MF $(DEPDIR)/libcactus_la-msg.Tpo -c -o libcactus_la-msg.lo `test -f 'msg.c' || echo '$(srcdir)/'`msg.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-msg.Tpo $(DEPDIR)/libcactus_la-msg.Plo
+#	source='msg.c' object='libcactus_la-msg.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-msg.lo `test -f 'msg.c' || echo '$(srcdir)/'`msg.c
 
 libcactus_la-async_work.lo: async_work.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-async_work.lo -MD -MP -MF $(DEPDIR)/libcactus_la-async_work.Tpo -c -o libcactus_la-async_work.lo `test -f 'async_work.c' || echo '$(srcdir)/'`async_work.c
-	$(am__mv) $(DEPDIR)/libcactus_la-async_work.Tpo $(DEPDIR)/libcactus_la-async_work.Plo
-#	source='async_work.c' object='libcactus_la-async_work.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-async_work.lo `test -f 'async_work.c' || echo '$(srcdir)/'`async_work.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-async_work.lo -MD -MP -MF $(DEPDIR)/libcactus_la-async_work.Tpo -c -o libcactus_la-async_work.lo `test -f 'async_work.c' || echo '$(srcdir)/'`async_work.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-async_work.Tpo $(DEPDIR)/libcactus_la-async_work.Plo
+#	source='async_work.c' object='libcactus_la-async_work.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-async_work.lo `test -f 'async_work.c' || echo '$(srcdir)/'`async_work.c
 
 libcactus_la-nfct.lo: nfct.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nfct.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nfct.Tpo -c -o libcactus_la-nfct.lo `test -f 'nfct.c' || echo '$(srcdir)/'`nfct.c
-	$(am__mv) $(DEPDIR)/libcactus_la-nfct.Tpo $(DEPDIR)/libcactus_la-nfct.Plo
-#	source='nfct.c' object='libcactus_la-nfct.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nfct.lo `test -f 'nfct.c' || echo '$(srcdir)/'`nfct.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nfct.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nfct.Tpo -c -o libcactus_la-nfct.lo `test -f 'nfct.c' || echo '$(srcdir)/'`nfct.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-nfct.Tpo $(DEPDIR)/libcactus_la-nfct.Plo
+#	source='nfct.c' object='libcactus_la-nfct.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nfct.lo `test -f 'nfct.c' || echo '$(srcdir)/'`nfct.c
 
 libcactus_la-nfq.lo: nfq.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nfq.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nfq.Tpo -c -o libcactus_la-nfq.lo `test -f 'nfq.c' || echo '$(srcdir)/'`nfq.c
-	$(am__mv) $(DEPDIR)/libcactus_la-nfq.Tpo $(DEPDIR)/libcactus_la-nfq.Plo
-#	source='nfq.c' object='libcactus_la-nfq.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nfq.lo `test -f 'nfq.c' || echo '$(srcdir)/'`nfq.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nfq.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nfq.Tpo -c -o libcactus_la-nfq.lo `test -f 'nfq.c' || echo '$(srcdir)/'`nfq.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-nfq.Tpo $(DEPDIR)/libcactus_la-nfq.Plo
+#	source='nfq.c' object='libcactus_la-nfq.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nfq.lo `test -f 'nfq.c' || echo '$(srcdir)/'`nfq.c
 
 libcactus_la-nl.lo: nl.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nl.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nl.Tpo -c -o libcactus_la-nl.lo `test -f 'nl.c' || echo '$(srcdir)/'`nl.c
-	$(am__mv) $(DEPDIR)/libcactus_la-nl.Tpo $(DEPDIR)/libcactus_la-nl.Plo
-#	source='nl.c' object='libcactus_la-nl.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nl.lo `test -f 'nl.c' || echo '$(srcdir)/'`nl.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-nl.lo -MD -MP -MF $(DEPDIR)/libcactus_la-nl.Tpo -c -o libcactus_la-nl.lo `test -f 'nl.c' || echo '$(srcdir)/'`nl.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-nl.Tpo $(DEPDIR)/libcactus_la-nl.Plo
+#	source='nl.c' object='libcactus_la-nl.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-nl.lo `test -f 'nl.c' || echo '$(srcdir)/'`nl.c
 
 libcactus_la-rpclite.lo: rpclite.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-rpclite.lo -MD -MP -MF $(DEPDIR)/libcactus_la-rpclite.Tpo -c -o libcactus_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
-	$(am__mv) $(DEPDIR)/libcactus_la-rpclite.Tpo $(DEPDIR)/libcactus_la-rpclite.Plo
-#	source='rpclite.c' object='libcactus_la-rpclite.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-rpclite.lo -MD -MP -MF $(DEPDIR)/libcactus_la-rpclite.Tpo -c -o libcactus_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-rpclite.Tpo $(DEPDIR)/libcactus_la-rpclite.Plo
+#	source='rpclite.c' object='libcactus_la-rpclite.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
 
 libcactus_la-rtnl.lo: rtnl.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-rtnl.lo -MD -MP -MF $(DEPDIR)/libcactus_la-rtnl.Tpo -c -o libcactus_la-rtnl.lo `test -f 'rtnl.c' || echo '$(srcdir)/'`rtnl.c
-	$(am__mv) $(DEPDIR)/libcactus_la-rtnl.Tpo $(DEPDIR)/libcactus_la-rtnl.Plo
-#	source='rtnl.c' object='libcactus_la-rtnl.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-rtnl.lo `test -f 'rtnl.c' || echo '$(srcdir)/'`rtnl.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-rtnl.lo -MD -MP -MF $(DEPDIR)/libcactus_la-rtnl.Tpo -c -o libcactus_la-rtnl.lo `test -f 'rtnl.c' || echo '$(srcdir)/'`rtnl.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-rtnl.Tpo $(DEPDIR)/libcactus_la-rtnl.Plo
+#	source='rtnl.c' object='libcactus_la-rtnl.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-rtnl.lo `test -f 'rtnl.c' || echo '$(srcdir)/'`rtnl.c
 
 libcactus_la-sock_stat.lo: sock_stat.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-sock_stat.lo -MD -MP -MF $(DEPDIR)/libcactus_la-sock_stat.Tpo -c -o libcactus_la-sock_stat.lo `test -f 'sock_stat.c' || echo '$(srcdir)/'`sock_stat.c
-	$(am__mv) $(DEPDIR)/libcactus_la-sock_stat.Tpo $(DEPDIR)/libcactus_la-sock_stat.Plo
-#	source='sock_stat.c' object='libcactus_la-sock_stat.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-sock_stat.lo `test -f 'sock_stat.c' || echo '$(srcdir)/'`sock_stat.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-sock_stat.lo -MD -MP -MF $(DEPDIR)/libcactus_la-sock_stat.Tpo -c -o libcactus_la-sock_stat.lo `test -f 'sock_stat.c' || echo '$(srcdir)/'`sock_stat.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-sock_stat.Tpo $(DEPDIR)/libcactus_la-sock_stat.Plo
+#	source='sock_stat.c' object='libcactus_la-sock_stat.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-sock_stat.lo `test -f 'sock_stat.c' || echo '$(srcdir)/'`sock_stat.c
 
 libcactus_la-timer.lo: timer.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-timer.lo -MD -MP -MF $(DEPDIR)/libcactus_la-timer.Tpo -c -o libcactus_la-timer.lo `test -f 'timer.c' || echo '$(srcdir)/'`timer.c
-	$(am__mv) $(DEPDIR)/libcactus_la-timer.Tpo $(DEPDIR)/libcactus_la-timer.Plo
-#	source='timer.c' object='libcactus_la-timer.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-timer.lo `test -f 'timer.c' || echo '$(srcdir)/'`timer.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-timer.lo -MD -MP -MF $(DEPDIR)/libcactus_la-timer.Tpo -c -o libcactus_la-timer.lo `test -f 'timer.c' || echo '$(srcdir)/'`timer.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-timer.Tpo $(DEPDIR)/libcactus_la-timer.Plo
+#	source='timer.c' object='libcactus_la-timer.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-timer.lo `test -f 'timer.c' || echo '$(srcdir)/'`timer.c
 
 libcactus_la-uevent.lo: uevent.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-uevent.lo -MD -MP -MF $(DEPDIR)/libcactus_la-uevent.Tpo -c -o libcactus_la-uevent.lo `test -f 'uevent.c' || echo '$(srcdir)/'`uevent.c
-	$(am__mv) $(DEPDIR)/libcactus_la-uevent.Tpo $(DEPDIR)/libcactus_la-uevent.Plo
-#	source='uevent.c' object='libcactus_la-uevent.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-uevent.lo `test -f 'uevent.c' || echo '$(srcdir)/'`uevent.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-uevent.lo -MD -MP -MF $(DEPDIR)/libcactus_la-uevent.Tpo -c -o libcactus_la-uevent.lo `test -f 'uevent.c' || echo '$(srcdir)/'`uevent.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-uevent.Tpo $(DEPDIR)/libcactus_la-uevent.Plo
+#	source='uevent.c' object='libcactus_la-uevent.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-uevent.lo `test -f 'uevent.c' || echo '$(srcdir)/'`uevent.c
 
 libcactus_la-branch.lo: branch.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-branch.lo -MD -MP -MF $(DEPDIR)/libcactus_la-branch.Tpo -c -o libcactus_la-branch.lo `test -f 'branch.c' || echo '$(srcdir)/'`branch.c
-	$(am__mv) $(DEPDIR)/libcactus_la-branch.Tpo $(DEPDIR)/libcactus_la-branch.Plo
-#	source='branch.c' object='libcactus_la-branch.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-branch.lo `test -f 'branch.c' || echo '$(srcdir)/'`branch.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-branch.lo -MD -MP -MF $(DEPDIR)/libcactus_la-branch.Tpo -c -o libcactus_la-branch.lo `test -f 'branch.c' || echo '$(srcdir)/'`branch.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-branch.Tpo $(DEPDIR)/libcactus_la-branch.Plo
+#	source='branch.c' object='libcactus_la-branch.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-branch.lo `test -f 'branch.c' || echo '$(srcdir)/'`branch.c
 
 libcactus_la-util.lo: util.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-util.lo -MD -MP -MF $(DEPDIR)/libcactus_la-util.Tpo -c -o libcactus_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
-	$(am__mv) $(DEPDIR)/libcactus_la-util.Tpo $(DEPDIR)/libcactus_la-util.Plo
-#	source='util.c' object='libcactus_la-util.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-util.lo -MD -MP -MF $(DEPDIR)/libcactus_la-util.Tpo -c -o libcactus_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-util.Tpo $(DEPDIR)/libcactus_la-util.Plo
+#	source='util.c' object='libcactus_la-util.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-util.lo `test -f 'util.c' || echo '$(srcdir)/'`util.c
 
 libcactus_la-kconf.lo: kconf.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-kconf.lo -MD -MP -MF $(DEPDIR)/libcactus_la-kconf.Tpo -c -o libcactus_la-kconf.lo `test -f 'kconf.c' || echo '$(srcdir)/'`kconf.c
-	$(am__mv) $(DEPDIR)/libcactus_la-kconf.Tpo $(DEPDIR)/libcactus_la-kconf.Plo
-#	source='kconf.c' object='libcactus_la-kconf.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-kconf.lo `test -f 'kconf.c' || echo '$(srcdir)/'`kconf.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -MT libcactus_la-kconf.lo -MD -MP -MF $(DEPDIR)/libcactus_la-kconf.Tpo -c -o libcactus_la-kconf.lo `test -f 'kconf.c' || echo '$(srcdir)/'`kconf.c
+#	$(am__mv) $(DEPDIR)/libcactus_la-kconf.Tpo $(DEPDIR)/libcactus_la-kconf.Plo
+#	source='kconf.c' object='libcactus_la-kconf.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libcactus_la_CFLAGS) $(CFLAGS) -c -o libcactus_la-kconf.lo `test -f 'kconf.c' || echo '$(srcdir)/'`kconf.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

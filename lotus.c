@@ -1260,14 +1260,22 @@ static void parse_cmd(char *cmd)
 
     while(*cmd)  {
         for(p = cmd; *p; p++)  {
+            if(*p == '#')  {
+                *p++ = '\0';
+                while(*p)  {
+                    if(*p == '\n')  {
+                        *p++ = '\0';
+                        break;
+                    }
+                    p++;
+                }
+                break;
+            }
             if(*p == '\n' || *p == ';')  {
                 *p++ = '\0';
                 break;
             }
         }
-        /* make '#' as start of comment */
-        if((sharp = strchr(cmd, '#')))
-            *sharp = '\0';
 
         if(! tokenize(&toks, &sz, cmd))  {
             printf("Malformated command & arguments!\n");

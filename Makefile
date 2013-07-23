@@ -35,8 +35,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-unknown-linux-gnu
-host_triplet = x86_64-unknown-linux-gnu
+build_triplet = x86_64-pc-linux-gnu
+host_triplet = x86_64-pc-linux-gnu
 sbin_PROGRAMS = lavender$(EXEEXT)
 bin_PROGRAMS = lavender-gtk$(EXEEXT) lotus$(EXEEXT)
 subdir = .
@@ -195,8 +195,8 @@ AUTOHEADER = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/chin/work/lavender-0.2.0/missing --run automake-1.11
 AWK = gawk
 CC = gcc
-CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CCDEPMODE = depmode=none
+CFLAGS = -g -O2 -g -Wall -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -267,42 +267,42 @@ am__quote =
 am__tar = ${AMTAR} chof - "$$tardir"
 am__untar = ${AMTAR} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-unknown-linux-gnu
-build_alias = 
+build = x86_64-pc-linux-gnu
+build_alias = x86_64-linux-gnu
 build_cpu = x86_64
 build_os = linux-gnu
-build_vendor = unknown
+build_vendor = pc
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-unknown-linux-gnu
+host = x86_64-pc-linux-gnu
 host_alias = 
 host_cpu = x86_64
 host_os = linux-gnu
-host_vendor = unknown
+host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
-infodir = ${datarootdir}/info
+infodir = ${prefix}/share/info
 install_sh = ${SHELL} /home/chin/work/lavender-0.2.0/install-sh
 libdir = ${exec_prefix}/lib
-libexecdir = ${exec_prefix}/libexec
+libexecdir = ${prefix}/lib/lavender
 localedir = ${datarootdir}/locale
-localstatedir = ${prefix}/var
+localstatedir = /var
 lt_ECHO = echo
-mandir = ${datarootdir}/man
+mandir = ${prefix}/share/man
 mkdir_p = /bin/mkdir -p
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /usr
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
-sysconfdir = ${prefix}/etc
+sysconfdir = /etc
 target_alias = 
 top_build_prefix = 
 top_builddir = .
@@ -615,112 +615,112 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/lavender-lavender.Po
-include ./$(DEPDIR)/lavender_gtk-lavender-gtk.Po
-include ./$(DEPDIR)/libdesert_gtk_la-desert_gtk.Plo
-include ./$(DEPDIR)/libdesert_la-desert.Plo
-include ./$(DEPDIR)/libdesert_la-ipclite.Plo
-include ./$(DEPDIR)/libdesert_la-ipclite_client.Plo
-include ./$(DEPDIR)/libdesert_la-rpclite.Plo
-include ./$(DEPDIR)/lotus-lotus.Po
+#include ./$(DEPDIR)/lavender-lavender.Po
+#include ./$(DEPDIR)/lavender_gtk-lavender-gtk.Po
+#include ./$(DEPDIR)/libdesert_gtk_la-desert_gtk.Plo
+#include ./$(DEPDIR)/libdesert_la-desert.Plo
+#include ./$(DEPDIR)/libdesert_la-ipclite.Plo
+#include ./$(DEPDIR)/libdesert_la-ipclite_client.Plo
+#include ./$(DEPDIR)/libdesert_la-rpclite.Plo
+#include ./$(DEPDIR)/lotus-lotus.Po
 
 .c.o:
-	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-#	source='$<' object='$@' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(COMPILE) -c $<
+#	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+#	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+#	source='$<' object='$@' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(COMPILE) -c $<
 
 .c.obj:
-	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-#	source='$<' object='$@' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+#	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+#	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+#	source='$<' object='$@' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 
 .c.lo:
-	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
-#	source='$<' object='$@' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LTCOMPILE) -c -o $@ $<
+#	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+#	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+#	source='$<' object='$@' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LTCOMPILE) -c -o $@ $<
 
 libdesert_la-desert.lo: desert.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-desert.lo -MD -MP -MF $(DEPDIR)/libdesert_la-desert.Tpo -c -o libdesert_la-desert.lo `test -f 'desert.c' || echo '$(srcdir)/'`desert.c
-	$(am__mv) $(DEPDIR)/libdesert_la-desert.Tpo $(DEPDIR)/libdesert_la-desert.Plo
-#	source='desert.c' object='libdesert_la-desert.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-desert.lo `test -f 'desert.c' || echo '$(srcdir)/'`desert.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-desert.lo -MD -MP -MF $(DEPDIR)/libdesert_la-desert.Tpo -c -o libdesert_la-desert.lo `test -f 'desert.c' || echo '$(srcdir)/'`desert.c
+#	$(am__mv) $(DEPDIR)/libdesert_la-desert.Tpo $(DEPDIR)/libdesert_la-desert.Plo
+#	source='desert.c' object='libdesert_la-desert.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-desert.lo `test -f 'desert.c' || echo '$(srcdir)/'`desert.c
 
 libdesert_la-ipclite.lo: ipclite.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-ipclite.lo -MD -MP -MF $(DEPDIR)/libdesert_la-ipclite.Tpo -c -o libdesert_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
-	$(am__mv) $(DEPDIR)/libdesert_la-ipclite.Tpo $(DEPDIR)/libdesert_la-ipclite.Plo
-#	source='ipclite.c' object='libdesert_la-ipclite.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-ipclite.lo -MD -MP -MF $(DEPDIR)/libdesert_la-ipclite.Tpo -c -o libdesert_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
+#	$(am__mv) $(DEPDIR)/libdesert_la-ipclite.Tpo $(DEPDIR)/libdesert_la-ipclite.Plo
+#	source='ipclite.c' object='libdesert_la-ipclite.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-ipclite.lo `test -f 'ipclite.c' || echo '$(srcdir)/'`ipclite.c
 
 libdesert_la-ipclite_client.lo: ipclite_client.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-ipclite_client.lo -MD -MP -MF $(DEPDIR)/libdesert_la-ipclite_client.Tpo -c -o libdesert_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
-	$(am__mv) $(DEPDIR)/libdesert_la-ipclite_client.Tpo $(DEPDIR)/libdesert_la-ipclite_client.Plo
-#	source='ipclite_client.c' object='libdesert_la-ipclite_client.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-ipclite_client.lo -MD -MP -MF $(DEPDIR)/libdesert_la-ipclite_client.Tpo -c -o libdesert_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
+#	$(am__mv) $(DEPDIR)/libdesert_la-ipclite_client.Tpo $(DEPDIR)/libdesert_la-ipclite_client.Plo
+#	source='ipclite_client.c' object='libdesert_la-ipclite_client.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-ipclite_client.lo `test -f 'ipclite_client.c' || echo '$(srcdir)/'`ipclite_client.c
 
 libdesert_la-rpclite.lo: rpclite.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-rpclite.lo -MD -MP -MF $(DEPDIR)/libdesert_la-rpclite.Tpo -c -o libdesert_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
-	$(am__mv) $(DEPDIR)/libdesert_la-rpclite.Tpo $(DEPDIR)/libdesert_la-rpclite.Plo
-#	source='rpclite.c' object='libdesert_la-rpclite.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -MT libdesert_la-rpclite.lo -MD -MP -MF $(DEPDIR)/libdesert_la-rpclite.Tpo -c -o libdesert_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
+#	$(am__mv) $(DEPDIR)/libdesert_la-rpclite.Tpo $(DEPDIR)/libdesert_la-rpclite.Plo
+#	source='rpclite.c' object='libdesert_la-rpclite.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_la_CFLAGS) $(CFLAGS) -c -o libdesert_la-rpclite.lo `test -f 'rpclite.c' || echo '$(srcdir)/'`rpclite.c
 
 libdesert_gtk_la-desert_gtk.lo: desert_gtk.c
-	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_gtk_la_CFLAGS) $(CFLAGS) -MT libdesert_gtk_la-desert_gtk.lo -MD -MP -MF $(DEPDIR)/libdesert_gtk_la-desert_gtk.Tpo -c -o libdesert_gtk_la-desert_gtk.lo `test -f 'desert_gtk.c' || echo '$(srcdir)/'`desert_gtk.c
-	$(am__mv) $(DEPDIR)/libdesert_gtk_la-desert_gtk.Tpo $(DEPDIR)/libdesert_gtk_la-desert_gtk.Plo
-#	source='desert_gtk.c' object='libdesert_gtk_la-desert_gtk.lo' libtool=yes \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_gtk_la_CFLAGS) $(CFLAGS) -c -o libdesert_gtk_la-desert_gtk.lo `test -f 'desert_gtk.c' || echo '$(srcdir)/'`desert_gtk.c
+#	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_gtk_la_CFLAGS) $(CFLAGS) -MT libdesert_gtk_la-desert_gtk.lo -MD -MP -MF $(DEPDIR)/libdesert_gtk_la-desert_gtk.Tpo -c -o libdesert_gtk_la-desert_gtk.lo `test -f 'desert_gtk.c' || echo '$(srcdir)/'`desert_gtk.c
+#	$(am__mv) $(DEPDIR)/libdesert_gtk_la-desert_gtk.Tpo $(DEPDIR)/libdesert_gtk_la-desert_gtk.Plo
+#	source='desert_gtk.c' object='libdesert_gtk_la-desert_gtk.lo' libtool=yes 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdesert_gtk_la_CFLAGS) $(CFLAGS) -c -o libdesert_gtk_la-desert_gtk.lo `test -f 'desert_gtk.c' || echo '$(srcdir)/'`desert_gtk.c
 
 lavender-lavender.o: lavender.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -MT lavender-lavender.o -MD -MP -MF $(DEPDIR)/lavender-lavender.Tpo -c -o lavender-lavender.o `test -f 'lavender.c' || echo '$(srcdir)/'`lavender.c
-	$(am__mv) $(DEPDIR)/lavender-lavender.Tpo $(DEPDIR)/lavender-lavender.Po
-#	source='lavender.c' object='lavender-lavender.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -c -o lavender-lavender.o `test -f 'lavender.c' || echo '$(srcdir)/'`lavender.c
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -MT lavender-lavender.o -MD -MP -MF $(DEPDIR)/lavender-lavender.Tpo -c -o lavender-lavender.o `test -f 'lavender.c' || echo '$(srcdir)/'`lavender.c
+#	$(am__mv) $(DEPDIR)/lavender-lavender.Tpo $(DEPDIR)/lavender-lavender.Po
+#	source='lavender.c' object='lavender-lavender.o' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -c -o lavender-lavender.o `test -f 'lavender.c' || echo '$(srcdir)/'`lavender.c
 
 lavender-lavender.obj: lavender.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -MT lavender-lavender.obj -MD -MP -MF $(DEPDIR)/lavender-lavender.Tpo -c -o lavender-lavender.obj `if test -f 'lavender.c'; then $(CYGPATH_W) 'lavender.c'; else $(CYGPATH_W) '$(srcdir)/lavender.c'; fi`
-	$(am__mv) $(DEPDIR)/lavender-lavender.Tpo $(DEPDIR)/lavender-lavender.Po
-#	source='lavender.c' object='lavender-lavender.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -c -o lavender-lavender.obj `if test -f 'lavender.c'; then $(CYGPATH_W) 'lavender.c'; else $(CYGPATH_W) '$(srcdir)/lavender.c'; fi`
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -MT lavender-lavender.obj -MD -MP -MF $(DEPDIR)/lavender-lavender.Tpo -c -o lavender-lavender.obj `if test -f 'lavender.c'; then $(CYGPATH_W) 'lavender.c'; else $(CYGPATH_W) '$(srcdir)/lavender.c'; fi`
+#	$(am__mv) $(DEPDIR)/lavender-lavender.Tpo $(DEPDIR)/lavender-lavender.Po
+#	source='lavender.c' object='lavender-lavender.obj' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_CFLAGS) $(CFLAGS) -c -o lavender-lavender.obj `if test -f 'lavender.c'; then $(CYGPATH_W) 'lavender.c'; else $(CYGPATH_W) '$(srcdir)/lavender.c'; fi`
 
 lavender_gtk-lavender-gtk.o: lavender-gtk.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -MT lavender_gtk-lavender-gtk.o -MD -MP -MF $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo -c -o lavender_gtk-lavender-gtk.o `test -f 'lavender-gtk.c' || echo '$(srcdir)/'`lavender-gtk.c
-	$(am__mv) $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo $(DEPDIR)/lavender_gtk-lavender-gtk.Po
-#	source='lavender-gtk.c' object='lavender_gtk-lavender-gtk.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -c -o lavender_gtk-lavender-gtk.o `test -f 'lavender-gtk.c' || echo '$(srcdir)/'`lavender-gtk.c
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -MT lavender_gtk-lavender-gtk.o -MD -MP -MF $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo -c -o lavender_gtk-lavender-gtk.o `test -f 'lavender-gtk.c' || echo '$(srcdir)/'`lavender-gtk.c
+#	$(am__mv) $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo $(DEPDIR)/lavender_gtk-lavender-gtk.Po
+#	source='lavender-gtk.c' object='lavender_gtk-lavender-gtk.o' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -c -o lavender_gtk-lavender-gtk.o `test -f 'lavender-gtk.c' || echo '$(srcdir)/'`lavender-gtk.c
 
 lavender_gtk-lavender-gtk.obj: lavender-gtk.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -MT lavender_gtk-lavender-gtk.obj -MD -MP -MF $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo -c -o lavender_gtk-lavender-gtk.obj `if test -f 'lavender-gtk.c'; then $(CYGPATH_W) 'lavender-gtk.c'; else $(CYGPATH_W) '$(srcdir)/lavender-gtk.c'; fi`
-	$(am__mv) $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo $(DEPDIR)/lavender_gtk-lavender-gtk.Po
-#	source='lavender-gtk.c' object='lavender_gtk-lavender-gtk.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -c -o lavender_gtk-lavender-gtk.obj `if test -f 'lavender-gtk.c'; then $(CYGPATH_W) 'lavender-gtk.c'; else $(CYGPATH_W) '$(srcdir)/lavender-gtk.c'; fi`
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -MT lavender_gtk-lavender-gtk.obj -MD -MP -MF $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo -c -o lavender_gtk-lavender-gtk.obj `if test -f 'lavender-gtk.c'; then $(CYGPATH_W) 'lavender-gtk.c'; else $(CYGPATH_W) '$(srcdir)/lavender-gtk.c'; fi`
+#	$(am__mv) $(DEPDIR)/lavender_gtk-lavender-gtk.Tpo $(DEPDIR)/lavender_gtk-lavender-gtk.Po
+#	source='lavender-gtk.c' object='lavender_gtk-lavender-gtk.obj' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lavender_gtk_CFLAGS) $(CFLAGS) -c -o lavender_gtk-lavender-gtk.obj `if test -f 'lavender-gtk.c'; then $(CYGPATH_W) 'lavender-gtk.c'; else $(CYGPATH_W) '$(srcdir)/lavender-gtk.c'; fi`
 
 lotus-lotus.o: lotus.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -MT lotus-lotus.o -MD -MP -MF $(DEPDIR)/lotus-lotus.Tpo -c -o lotus-lotus.o `test -f 'lotus.c' || echo '$(srcdir)/'`lotus.c
-	$(am__mv) $(DEPDIR)/lotus-lotus.Tpo $(DEPDIR)/lotus-lotus.Po
-#	source='lotus.c' object='lotus-lotus.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -c -o lotus-lotus.o `test -f 'lotus.c' || echo '$(srcdir)/'`lotus.c
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -MT lotus-lotus.o -MD -MP -MF $(DEPDIR)/lotus-lotus.Tpo -c -o lotus-lotus.o `test -f 'lotus.c' || echo '$(srcdir)/'`lotus.c
+#	$(am__mv) $(DEPDIR)/lotus-lotus.Tpo $(DEPDIR)/lotus-lotus.Po
+#	source='lotus.c' object='lotus-lotus.o' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -c -o lotus-lotus.o `test -f 'lotus.c' || echo '$(srcdir)/'`lotus.c
 
 lotus-lotus.obj: lotus.c
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -MT lotus-lotus.obj -MD -MP -MF $(DEPDIR)/lotus-lotus.Tpo -c -o lotus-lotus.obj `if test -f 'lotus.c'; then $(CYGPATH_W) 'lotus.c'; else $(CYGPATH_W) '$(srcdir)/lotus.c'; fi`
-	$(am__mv) $(DEPDIR)/lotus-lotus.Tpo $(DEPDIR)/lotus-lotus.Po
-#	source='lotus.c' object='lotus-lotus.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -c -o lotus-lotus.obj `if test -f 'lotus.c'; then $(CYGPATH_W) 'lotus.c'; else $(CYGPATH_W) '$(srcdir)/lotus.c'; fi`
+#	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -MT lotus-lotus.obj -MD -MP -MF $(DEPDIR)/lotus-lotus.Tpo -c -o lotus-lotus.obj `if test -f 'lotus.c'; then $(CYGPATH_W) 'lotus.c'; else $(CYGPATH_W) '$(srcdir)/lotus.c'; fi`
+#	$(am__mv) $(DEPDIR)/lotus-lotus.Tpo $(DEPDIR)/lotus-lotus.Po
+#	source='lotus.c' object='lotus-lotus.obj' libtool=no 
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) 
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(lotus_CFLAGS) $(CFLAGS) -c -o lotus-lotus.obj `if test -f 'lotus.c'; then $(CYGPATH_W) 'lotus.c'; else $(CYGPATH_W) '$(srcdir)/lotus.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
