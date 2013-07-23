@@ -1,3 +1,11 @@
+lavender (0.2.1) unstable; urgency=low
+  * Memory recollection fixed
+  * More internal API exported through Lotus shell CLI
+  * Log engine dead loop fixed
+  * Misc fixes.
+
+ -- Cross Chin <crs.chin@gmail.com>  Tue, 23 Jul 2013 19:04:12 +0800
+
 lavender (0.2.0) unstable; urgency=low
   * Bind executable name with uid, so that Adnroid apps can be distinguished
 

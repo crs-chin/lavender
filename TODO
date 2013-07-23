@@ -5,7 +5,6 @@ rpclite verification:
 6. ct counter interface on client.
 9. UDP DIAG EXACT QUERY CAN NOT WORK!
 
-
 CACTUS TODO:
 3. fw table impl.
    4. disconnect specific proc's network.
@@ -16,17 +15,14 @@ CACTUS TODO:
 21. misc proto handling for incoming and outgoing.
    1. udplite, icmp, dccp, sctp
    2. proto table for enabled/disabled state.
-30. desktop kernel not work, should be due to zone enabled and set to
-   update mark, and successfully updated, but ack flag not set, so no
-   ack returned, <-- verify.
 32. more commands for lavender-gtk
 35. emacs startup dns resolve not work for udp verdict.
 37. config file for lavender gtk client.
-38. seems there's still mem leak, checking.
 
-* 41. more lavender state to be save in rule list db.
-* 43. many extended API and client API not fully implemented.
+* 41. more lavender state to be save in rule list db
+* 43. fw object action alter API not implemented
 * 46. return error code of lotus shell command
+* 47. fw object default action API not implemented
 
 android porting:
 * 37. verdict request under screenlock

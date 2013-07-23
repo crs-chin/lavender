@@ -81,9 +81,9 @@ nfq packet drop algorithm:
 5. queue outgoing verdict TCP SYN packet only.
 6. nfq manage verdict queue internally.
 
-Android Limitations
-1. On Android Ap may create services in system server, the service was
-actually a thread in it, and there's no way to judge AP services'
-network access behavior.
+Limitations
+Processes can share one socket connection, and system is not able to
+distinguish the process where the packet is from, all processes will
+be fired to verdict under such condition.
 
                                                 crs.chin@gmail.com
