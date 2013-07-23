@@ -26,7 +26,7 @@ CACTUS TODO:
 
 * 41. more lavender state to be save in rule list db.
 * 43. many extended API and client API not fully implemented.
-* 44. execute command through lotus shell.
+* 46. return error code of lotus shell command
 
 android porting:
 * 37. verdict request under screenlock

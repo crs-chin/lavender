@@ -333,7 +333,7 @@ gardenia *gardenia_create(const char *path,
 
     if(! (ret = objdup(&g)))
         __gardenia_destroy(&g);
-    list_assign(&g.logs, &ret->logs);
+    list_assign(&ret->logs, &g.logs);
     return ret;
 }
 

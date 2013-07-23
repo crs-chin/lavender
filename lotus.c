@@ -1184,11 +1184,27 @@ static void dispatch_cmd(char **toks)
     printf("Unrecognized command, type help for help.\n");
 }
 
+static void parse_cmd(char *cmd)
+{
+    char **toks = NULL, *sharp;
+    size_t sz = 0;
+
+    /* make '#' as start of comment */
+    if((sharp = strchr(cmd, '#')))
+        *sharp = '\0';
+
+    if(! tokenize(&toks, &sz, cmd))  {
+        printf("Malformated command & arguments!\n");
+        return;
+    }
+
+    dispatch_cmd(toks);
+    pthread_mutex_lock(&record_lock);
+}
+
 static void front_end(void)
 {
     char prompt[50], *cmd = NULL;
-    char **toks = NULL, *sharp;
-    size_t sz = 0;
     int err;
 
     pthread_mutex_lock(&record_lock);
@@ -1214,17 +1230,7 @@ static void front_end(void)
         if(! (cmd = fgets(buf, sizeof(buf), stdin)))
             return;
 #endif
-        /* make '#' as start of comment */
-        if((sharp = strchr(cmd, '#')))
-            *sharp = '\0';
-
-        if(! tokenize(&toks, &sz, cmd))  {
-            printf("Malformated command & arguments!\n");
-            continue;
-        }
-
-        dispatch_cmd(toks);
-        pthread_mutex_lock(&record_lock);
+        parse_cmd(cmd);
     }
 }
 
@@ -1385,7 +1391,7 @@ int main(int argc, char *argv[])
             err = 0;
             break;
         case CMD_COMMAND:
-            /* TODO: */
+            parse_cmd(command);
             err = 0;
             break;
         case CMD_VERSION:
