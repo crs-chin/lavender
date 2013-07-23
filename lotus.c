@@ -79,6 +79,7 @@ static const char banner[] = "Lotus, The Lavender CLI console";
 static pthread_mutex_t record_lock = PTHREAD_MUTEX_INITIALIZER;
 static verdict_record *record_list = NULL;
 static verdict_record *record_end = NULL;
+static int front_end = 0;
 static list conn_head = LIST_HEAD_INIT(conn_head);
 
 static void cmd_list(char *args[], const command_desc *cmd);
@@ -156,7 +157,7 @@ enum{
     CMD_LEVEL_CONTROL,
     CMD_CACTUS_CONTROL,
     CMD_SHUTDOWN,
-    CMD_FRONT_END,
+    CMD_SHELL,
     CMD_COMMAND,
     CMD_VERSION,
     CMD_TEST,
@@ -175,7 +176,7 @@ static void help(const char *prog)
            "  -L|--level <LVL>  Specify log level to operate\n"
            "  -h|--help         Show this help message\n"
            "  -S|--shutdown     Shutdown Cactus Runtime\n"
-           "  -t|--front-end    Run in front-end mode\n"
+           "  -t|--shell        Run in lotus shell mode\n"
            "  -C|--command      Run lotus shell command\n"
            "  -v|--version      Show version info\n"
            "TYPE: main, rtnl, uevent, conntrack, all\n"
@@ -256,6 +257,7 @@ static const char *get_help(const char *cmd)
         msg = "  set lavender service config and state\n"
             "    set [ARGUMENTS]\n"
             "  ARGUMENTS:\n"
+            "    front-end <on|off>        set front-end mode on or off\n"
             "    state <on|off>            set cactus status on or off\n"
             "    logtype <TYPE> <on|off>   set log type on or off\n"
             "     TYPE:\n"
@@ -383,7 +385,7 @@ static void fe_cb(int type, const void *msg, void *ud)
     }
 }
 
-static void list_verd(void)
+static void __list_verd(void)
 {
     verdict_record *r;
     msg_verdict_req *req;
@@ -392,13 +394,6 @@ static void list_verd(void)
     int timeout, seq = 0;
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
-
-    pthread_mutex_lock(&record_lock);
-    if(record_list)
-        printf("VERDICT LIST:\n");
-    else
-        printf("No pending Verdicts.\n");
-
     for(r = record_list; r; r = r->next)  {
         req = &r->req[0];
 
@@ -416,6 +411,20 @@ static void list_verd(void)
         msg_fd_owner_for_each(fo, req)  {
             printf("    UID:%u, PID:%u, EXE:%s\n", fo->euid, fo->pid, fo->exe);
         }list_end;
+    }
+}
+
+static void list_verd(void)
+{
+    pthread_mutex_lock(&record_lock);
+    if(! front_end)  {
+        printf("Not in front-end mode!\n");
+    }else  {
+        if(record_list)
+            printf("VERDICT LIST:\n");
+        else
+            printf("No pending Verdicts.\n");
+        __list_verd();
     }
     pthread_mutex_unlock(&record_lock);
 }
@@ -835,7 +844,7 @@ static void get_logtype(char *args[])
                 break;
             }
         }
-        if(i == -1)  {
+        if(type == -1)  {
             printf("Unknown log type \"%s\"!\n", parm);
             return;
         }
@@ -873,7 +882,7 @@ static void get_loglevel(char *args[])
                 break;
             }
         }
-        if(i == -1)  {
+        if(lvl == -1)  {
             printf("Unknown log level \"%s\"!\n", parm);
             return;
         }
@@ -951,6 +960,64 @@ static void cmd_get(char *args[], const command_desc *cd)
     }
 }
 
+static void set_front_end(char *args[])
+{
+    verdict_record *r;
+    int st, err;
+
+    if(! args[0] || ! args[0][0])  {
+        printf("Argument required!\n");
+        return;
+    }
+
+    if(! strcasecmp(args[0], "on"))  {
+        st = 1;
+    }else if(! strcasecmp(args[0], "off"))  {
+        st = 0;
+    }else  {
+        printf("Invalid state spec \"%s\"!\n", args[0]);
+        return;
+    }
+
+    pthread_mutex_lock(&record_lock);
+    if(st && front_end)  {
+        printf("Already in front-end mode.\n");
+        goto out;
+    }else if(! st && ! front_end)  {
+        printf("Already out of front-end mode.\n");
+        goto out;
+    }else if(st)  {
+        if((err = desert_register_fe(0, fe_cb, NULL)))  {
+            printf("Fail to self register as front-end(%d)!", err);
+            goto out;
+        }else  {
+            printf("Registered as front-end.\n");
+            front_end = 1;
+        }
+    }else  {
+        if((err = desert_unregister_fe(0)))  {
+            printf("Fail to self unregister front-end(%d)!\n", err);
+            goto out;
+        }else  {
+            printf("Unregistered front-end.\n");
+            front_end = 0;
+        }
+    }
+
+    if(record_list)  {
+        printf("Clearing pending verdict(s):\n");
+        __list_verd();
+    }
+
+    while(record_list)  {
+        r = record_list;
+        record_list = record_list->next;
+        free(r);
+    }
+ out:
+    pthread_mutex_unlock(&record_lock);
+}
+
 static void set_logtype(char *args[])
 {
     int i, type = -1, st, err;
@@ -967,7 +1034,7 @@ static void set_logtype(char *args[])
                 break;
             }
         }
-        if(i == -1)  {
+        if(type == -1)  {
             printf("Unknown log type \"%s\"!\n", args[0]);
             return;
         }
@@ -1007,7 +1074,7 @@ static void set_loglevel(char *args[])
                 break;
             }
         }
-        if(i == -1)  {
+        if(lvl == -1)  {
             printf("Unknown log type \"%s\"!\n", args[0]);
             return;
         }
@@ -1077,7 +1144,9 @@ static void cmd_set(char *args[], const command_desc *cd)
         return;
     }
 
-    if(! strcasecmp(cmd, "logtype"))  {
+    if(! strcasecmp(cmd, "front-end"))  {
+        set_front_end(args + 1);
+    }else if(! strcasecmp(cmd, "logtype"))  {
         set_logtype(args + 1);
     }else if(! strcasecmp(cmd, "loglevel"))  {
         set_loglevel(args + 1);
@@ -1186,35 +1255,43 @@ static void dispatch_cmd(char **toks)
 
 static void parse_cmd(char *cmd)
 {
-    char **toks = NULL, *sharp;
+    char **toks = NULL, *sharp, *p;
     size_t sz = 0;
 
-    /* make '#' as start of comment */
-    if((sharp = strchr(cmd, '#')))
-        *sharp = '\0';
+    while(*cmd)  {
+        for(p = cmd; *p; p++)  {
+            if(*p == '\n' || *p == ';')  {
+                *p++ = '\0';
+                break;
+            }
+        }
+        /* make '#' as start of comment */
+        if((sharp = strchr(cmd, '#')))
+            *sharp = '\0';
 
-    if(! tokenize(&toks, &sz, cmd))  {
-        printf("Malformated command & arguments!\n");
-        return;
+        if(! tokenize(&toks, &sz, cmd))  {
+            printf("Malformated command & arguments!\n");
+            return;
+        }
+
+        dispatch_cmd(toks);
+        cmd = p;
     }
-
-    dispatch_cmd(toks);
-    pthread_mutex_lock(&record_lock);
 }
 
-static void front_end(void)
+static void shell(void)
 {
     char prompt[50], *cmd = NULL;
     int err;
 
-    pthread_mutex_lock(&record_lock);
-    if((err = desert_register_fe(0, fe_cb, NULL)))
-        ERROR("Fail to self register as front-end(%d)!", err);
     for(;;)  {
+        pthread_mutex_lock(&record_lock);
         if(record_list)
-            sprintf(prompt, "verdict %llu >", record_list->req[0].id);
+            sprintf(prompt, "[verdict %llu] >", record_list->req[0].id);
+        else if(front_end)
+            strcpy(prompt, "[front end] >");
         else
-            strcpy(prompt, "lotus shell >");
+            strcpy(prompt, "[lotus shell] >");
         pthread_mutex_unlock(&record_lock);
 
 #ifndef ANDROID_CHANGES
@@ -1253,7 +1330,7 @@ int main(int argc, char *argv[])
         {"level", 1, NULL, 'L'},
         {"help", 0, NULL, 'h'},
         {"shutdown", 0, NULL, 'S'},
-        {"front-end", 0, NULL, 't'},
+        {"shell", 0, NULL, 't'},
         {"command", 1, NULL, 'C'},
         {"version", 0, NULL, 'v'},
         {"test", 1, NULL, 'T'},
@@ -1330,7 +1407,7 @@ int main(int argc, char *argv[])
             SET_CMD(SHUTDOWN);
             break;
         case 't':
-            SET_CMD(FRONT_END);
+            SET_CMD(SHELL);
             break;
         case 'C':
             SET_CMD(COMMAND);
@@ -1386,8 +1463,8 @@ int main(int argc, char *argv[])
         case CMD_SHUTDOWN:
             err = desert_shutdown();
             break;
-        case CMD_FRONT_END:
-            front_end();
+        case CMD_SHELL:
+            shell();
             err = 0;
             break;
         case CMD_COMMAND:
