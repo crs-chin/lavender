@@ -59,7 +59,7 @@ struct _verdict_record{
 struct _command_desc{
     char *cmd;
     char *desc;
-    void (*func)(char *args[], const command_desc *cmd);
+    int (*func)(char *args[], const command_desc *cmd);
     const char *(*get_help)(const char *cmd);
 };
 
@@ -82,15 +82,15 @@ static verdict_record *record_end = NULL;
 static int front_end = 0;
 static list conn_head = LIST_HEAD_INIT(conn_head);
 
-static void cmd_list(char *args[], const command_desc *cmd);
-static void cmd_verd(char *args[], const command_desc *cmd);
-static void cmd_exit(char *args[], const command_desc *cmd);
-static void cmd_help(char *args[], const command_desc *cmd);
-static void cmd_get(char *args[], const command_desc *cmd);
-static void cmd_set(char *args[], const command_desc *cmd);
-static void cmd_shutdown(char *args[], const command_desc *cmd);
-static void cmd_flush(char *args[], const command_desc *cmd);
-static void cmd_rule(char *args[], const command_desc *cmd);
+static int cmd_list(char *args[], const command_desc *cmd);
+static int cmd_verd(char *args[], const command_desc *cmd);
+static int cmd_exit(char *args[], const command_desc *cmd);
+static int cmd_help(char *args[], const command_desc *cmd);
+static int cmd_get(char *args[], const command_desc *cmd);
+static int cmd_set(char *args[], const command_desc *cmd);
+static int cmd_shutdown(char *args[], const command_desc *cmd);
+static int cmd_flush(char *args[], const command_desc *cmd);
+static int cmd_rule(char *args[], const command_desc *cmd);
 
 static const char *get_help(const char *cmd);
 
@@ -414,7 +414,7 @@ static void __list_verd(void)
     }
 }
 
-static void list_verd(void)
+static int list_verd(void)
 {
     pthread_mutex_lock(&record_lock);
     if(! front_end)  {
@@ -427,6 +427,7 @@ static void list_verd(void)
         __list_verd();
     }
     pthread_mutex_unlock(&record_lock);
+    return 0;
 }
 
 static const char *action_string(int action)
@@ -444,116 +445,131 @@ static const char *action_string(int action)
     return target_tbl[target];
 }
 
-static void list_prog(char *args[])
+static int list_prog(char *args[])
 {
     int seq = 0, flags = 0;
     fw_obj *obj;
     msg_prog_res *res;
     list progs;
+    int err;
 
     if(args[0] && args[0][0])  {
         if(! strcasecmp(args[0], "active"))  {
             flags = ITER_F_ACTIVE;
         }else  {
             printf("Unrecognized argument \"%s\"\n", args[0]);
-            return;
+            return -1;
         }
     }
 
-    desert_get_all_fw_progs(&progs, flags);
+    err = desert_get_all_fw_progs(&progs, flags);
 
-    if(list_empty(&progs))  {
-        printf("No records returned!\n");
-        return;
+    if(! err)  {
+        if(! list_empty(&progs))  {
+            printf("INDEX UID        ACTION          PATH\n");
+            list_for_each_entry(obj, &progs, list)  {
+                res = &obj->prog[0];
+                printf("[%d]   %-10u %-15s %s\n", seq++, res->uid, action_string(res->action), res->path);
+            }
+            fw_objs_free(&progs);
+        }else  {
+            printf("No records returned!\n");
+        }
+    }else  {
+        printf("Fail to get progs(%d)!\n", err);
     }
-
-    printf("INDEX UID        ACTION          PATH\n");
-    list_for_each_entry(obj, &progs, list)  {
-        res = &obj->prog[0];
-        printf("[%d]   %-10u %-15s %s\n", seq++, res->uid, action_string(res->action), res->path);
-    }
-    fw_objs_free(&progs);
+    return err;
 }
 
-static void list_user(char *args[])
+static int list_user(char *args[])
 {
     int seq = 0, flags = 0;
     fw_obj *obj;
     msg_user_res *res;
     list users;
+    int err;
 
     if(args[0] && args[0][0])  {
         if(! strcasecmp(args[0], "active"))  {
             flags = ITER_F_ACTIVE;
         }else  {
             printf("Unrecognized argument \"%s\"\n", args[0]);
-            return;
+            return -1;
         }
     }
 
-    desert_get_all_fw_users(&users, flags);
+    err = desert_get_all_fw_users(&users, flags);
 
-    if(list_empty(&users))  {
-        printf("No records returned!\n");
-        return;
+    if(! err)  {
+        if(! list_empty(&users))  {
+            printf("INDEX UID        NAME\n");
+            list_for_each_entry(obj, &users, list)  {
+                res = &obj->user[0];
+                printf("[%d]   %-10u %s\n", seq++, res->uid, res->name);
+            }
+            fw_objs_free(&users);
+        }else  {
+            printf("No records returned!\n");
+        }
+    }else  {
+        printf("Failed to get users(%d)!\n", err);
     }
-
-    printf("INDEX UID        NAME\n");
-    list_for_each_entry(obj, &users, list)  {
-        res = &obj->user[0];
-        printf("[%d]   %-10u %s\n", seq++, res->uid, res->name);
-    }
-    fw_objs_free(&users);
+    return err;
 }
 
-static void list_proc(char *args[])
+static int list_proc(char *args[])
 {
     int seq = 0;
     msg_proc_res *res;
     fw_obj *obj;
     list procs;
+    int err;
 
     if(args[0] && args[0][0])  {
         if(! strcasecmp(args[0], "prog"))  {
             if(! args[1] || ! args[1][0])  {
                 printf("Parameter \"prog\" requires an argument, abort!\n");
-                return;
+                return -1;
             }
-            desert_get_all_procs_of_prog(&procs, args[1]);
+            err = desert_get_all_procs_of_prog(&procs, args[1]);
         }else if(! strcasecmp(args[0], "user"))  {
             char *endp;
             uid_t uid;
 
             if(! args[1] || ! args[1][0])  {
                 printf("Parameter \"user\" requires an argument, abort!\n");
-                return;
+                return -1;
             }
             uid = strtol(args[1], &endp, 0);
             if(*endp)  {
                 printf("Not a valid UID \"%s\", abort!\n", args[1]);
-                return;
+                return -1;
             }
-            desert_get_all_procs_of_user(&procs, uid);
+            err = desert_get_all_procs_of_user(&procs, uid);
         }else  {
             printf("Invalid argument \"%s\", abort!\n", args[0]);
-            return;
+            return -1;
         }
     }else  {
-        desert_get_all_fw_procs(&procs);
+        err = desert_get_all_fw_procs(&procs);
     }
 
-    if(list_empty(&procs))  {
-        printf("No records returned!\n");
-        return;
+    if(! err)  {
+        if(! list_empty(&procs))  {
+            printf("INDEX PID      UID      ACTION       PATH\n");
+            list_for_each_entry(obj, &procs, list)  {
+                res = &obj->proc[0];
+                printf("[%d]   %-8u %-8u %-12s %s\n",
+                       seq++, res->pid, res->uid, action_string(res->action), res->exe);
+            }
+            fw_objs_free(&procs);
+        }else  {
+            printf("No records returned!\n");
+        }
+    }else  {
+        printf("Fail to get procs(%d)!\n", err);
     }
-
-    printf("INDEX PID      UID      ACTION       PATH\n");
-    list_for_each_entry(obj, &procs, list)  {
-        res = &obj->proc[0];
-        printf("[%d]   %-8u %-8u %-12s %s\n",
-               seq++, res->pid, res->uid, action_string(res->action), res->exe);
-    }
-    fw_objs_free(&procs);
+    return err;
 }
 
 static inline void nw_conn_clear(list *head)
@@ -574,9 +590,6 @@ static void conn_print(const nw_conn *conn)
 
     switch(p->src.l3num)  {
     case AF_INET:  {
-        const unsigned char *ip_src = (const unsigned char *)&p->src.u3.ip;
-        const unsigned char *ip_dst = (const unsigned char *)&p->dst.u3.ip;
-
         switch(p->dst.protonum)  {
         case IPPROTO_TCP:
             prot = "TCP";
@@ -659,114 +672,121 @@ static int cp_conn_cb(const msg_nw_connection *conn, void *ud)
     return 0;
 }
 
-static void list_conn(char *args[])
+static int list_conn(char *args[])
 {
     nw_conn_ctx ctx;
+    int err;
 
     if(! args[0] || ! args[0][0])  {
         printf("Parameter \"conn\" requires arguments!\n");
-        return;
+        return -1;
     }
 
     list_init(&ctx.head);
     ctx.seq = 0;
     if(! strcasecmp(args[0], "proc"))  {
-            char *endp;
-            uid_t pid;
+        char *endp;
+        uid_t pid;
 
-            if(! args[1] || ! args[1][0])  {
-                printf("Parameter \"proc\" requires an argument, abort!\n");
-                return;
-            }
-            pid = strtol(args[1], &endp, 0);
-            if(*endp)  {
-                printf("Not a valid PID \"%s\", abort!\n", args[1]);
-                return;
-            }
+        if(! args[1] || ! args[1][0])  {
+            printf("Parameter \"proc\" requires an argument, abort!\n");
+            return -1;
+        }
+        pid = strtol(args[1], &endp, 0);
+        if(*endp)  {
+            printf("Not a valid PID \"%s\", abort!\n", args[1]);
+            return -1;
+        }
 
-            desert_get_proc_conn(pid, cp_conn_cb, &ctx);
+        err = desert_get_proc_conn(pid, cp_conn_cb, &ctx);
     }else if(! strcasecmp(args[0], "prog"))  {
         char *path, *endp;
         uid_t uid;
 
-            if(! args[1] || ! args[1][0]
-               || ! args[2] || ! args[2][0])  {
-                printf("Parameter \"prog\" requires arguments, abort!\n");
-                return;
-            }
+        if(! args[1] || ! args[1][0]
+           || ! args[2] || ! args[2][0])  {
+            printf("Parameter \"prog\" requires arguments, abort!\n");
+            return -1;
+        }
 
-            path = args[1];
-            uid = strtol(args[2], &endp, 0);
-            if(*endp)  {
-                printf("Not a valid UID \"%s\", abort!\n", args[1]);
-                return;
-            }
+        path = args[1];
+        uid = strtol(args[2], &endp, 0);
+        if(*endp)  {
+            printf("Not a valid UID \"%s\", abort!\n", args[1]);
+            return -1;
+        }
 
-            desert_get_prog_conn(path, uid, cp_conn_cb, &ctx);
+        err = desert_get_prog_conn(path, uid, cp_conn_cb, &ctx);
     }else if(! strcasecmp(args[0], "user"))  {
-            char *endp;
-            uid_t uid;
+        char *endp;
+        uid_t uid;
 
-            if(! args[1] || ! args[1][0])  {
-                printf("Parameter \"user\" requires an argument, abort!\n");
-                return;
-            }
-            uid = strtol(args[1], &endp, 0);
-            if(*endp)  {
-                printf("Not a valid UID \"%s\", abort!\n", args[1]);
-                return;
-            }
+        if(! args[1] || ! args[1][0])  {
+            printf("Parameter \"user\" requires an argument, abort!\n");
+            return -1;
+        }
+        uid = strtol(args[1], &endp, 0);
+        if(*endp)  {
+            printf("Not a valid UID \"%s\", abort!\n", args[1]);
+            return -1;
+        }
 
-            desert_get_user_conn(uid, cp_conn_cb, &ctx);
+        err = desert_get_user_conn(uid, cp_conn_cb, &ctx);
     }else  {
         printf("Unrecognized aregument \"%s\", abort!\n", args[0]);
-        return;
+        return -1;
     }
 
-    if(list_empty(&ctx.head))  {
-        printf("No records returned.\n");
-        return;
+    if(! err)  {
+        if(! list_empty(&ctx.head))  {
+            nw_conn_clear(&conn_head);
+            list_assign(&conn_head, &ctx.head);
+            printf("SEQ     AF   PROTO SOURCE         DESTINATION  SPORT  DPORT\n");
+            nw_conn_print(&conn_head);
+        }else  {
+            printf("No records returned.\n");
+        }
+    }else  {
+        printf("Failed to get connections(%d)!\n", err);
     }
-
-    nw_conn_clear(&conn_head);
-    list_assign(&conn_head, &ctx.head);
-    printf("SEQ     AF   PROTO SOURCE         DESTINATION  SPORT  DPORT\n");
-    nw_conn_print(&conn_head);
+    return err;
 }
 
-static void cmd_list(char *args[], const command_desc *cd)
+static int cmd_list(char *args[], const command_desc *cd)
 {
     char *cmd = args[0];
 
     if(! cmd || ! *cmd)  {
         printf("Verdict argument required!\n");
-        return;
+        return -1;
     }
 
     if(! strcasecmp(cmd, "verd"))  {
-        list_verd();
+        return list_verd();
     }else if(! strcasecmp(cmd, "prog"))  {
-        list_prog(args + 1);
+        return list_prog(args + 1);
     }else if(! strcasecmp(cmd, "user"))  {
-        list_user(args + 1);
+        return list_user(args + 1);
     }else if(! strcasecmp(cmd, "proc"))  {
-        list_proc(args + 1);
+        return list_proc(args + 1);
     }else if(! strcasecmp(cmd, "conn"))  {
-        list_conn(args + 1);
+        return list_conn(args + 1);
     }else  {
         printf("Unrecognized command argument \"%s\", abort!\n", cmd);
     }
+    return -1;
 }
 
-static void cmd_verd(char *args[], const command_desc *cd)
+static int cmd_verd(char *args[], const command_desc *cd)
 {
     verdict_record *r;
     char *cmd = args[0];
+    int err = -1;
     size_t i;
 
     if(! cmd || ! *cmd)  {
         printf("Verdict argument required!\n");
-        return;
+        return -1;
     }
 
     /* TODO: more argument handling */
@@ -776,7 +796,7 @@ static void cmd_verd(char *args[], const command_desc *cd)
     }
     if(i == arraysize(verdict_cmd))  {
         printf("Invalid verdict target!\n");
-        return;
+        return -1;
     }
 
     pthread_mutex_lock(&record_lock);
@@ -785,20 +805,22 @@ static void cmd_verd(char *args[], const command_desc *cd)
     pthread_mutex_unlock(&record_lock);
 
     if(r)  {
-        if(desert_send_verdict(r->req[0].id, verdict_cmd[i].verd))  {
-            ERROR("Fail to send verdict command for %llu!\n", r->req[0].id);
-            exit(-1);
-        }
+        if((err = desert_send_verdict(r->req[0].id, verdict_cmd[i].verd)))
+            printf("Fail to send verdict command for %llu!\n", r->req[0].id);
         free(r);
+    }else  {
+        printf("No pending verdict available.\n");
     }
+    return err;
 }
 
-static void cmd_exit(char *args[], const command_desc *cd)
+static int cmd_exit(char *args[], const command_desc *cd)
 {
     exit(0);
+    return 0;
 }
 
-static void cmd_help(char *args[], const command_desc *cd)
+static int cmd_help(char *args[], const command_desc *cd)
 {
     const command_desc *c = cmd_tbl;
     char *cmd = args[0];
@@ -809,7 +831,7 @@ static void cmd_help(char *args[], const command_desc *cd)
             printf("    %-15s    %s\n", c->cmd, c->desc);
             c++;
         }
-        return;
+        return 0;
     }
 
     while(c->cmd)  {
@@ -819,14 +841,15 @@ static void cmd_help(char *args[], const command_desc *cd)
             }else  {
                 printf("%s:\n%s\n", c->cmd, c->get_help(c->cmd));
             }
-            return;
+            return 0;
         }
         c++;
     }
     printf("Command \"%s\" unrecognized!\n", cmd);
+    return -1;
 }
 
-static void get_logtype(char *args[])
+static int get_logtype(char *args[])
 {
     char *parm = args[0];
     int i, type = -1, err;
@@ -834,7 +857,7 @@ static void get_logtype(char *args[])
 
     if(! parm || ! *parm)  {
         printf("Logtype argument required!\n");
-        return;
+        return -1;
     }
 
     if(strcasecmp(parm, "all"))  {
@@ -846,25 +869,25 @@ static void get_logtype(char *args[])
         }
         if(type == -1)  {
             printf("Unknown log type \"%s\"!\n", parm);
-            return;
+            return -1;
         }
     }
 
     if((err = desert_log_state(&st)))  {
         printf("Fail to get log state(%d)!\n", err);
-        return;
+        return err;
     }
 
     if(type != -1)  {
         printf("%-10s : %s\n", log_tbl[type], st.ctl[type] ? "ENABLED" : "DISABLED");
-        return;
+    }else  {
+        for(i = 0; i < NUM_LOG; i++)
+            printf("%-10s : %s\n", log_tbl[i], st.ctl[i] ? "ENABLED" : "DISABLED");
     }
-
-    for(i = 0; i < NUM_LOG; i++)
-        printf("%-10s : %s\n", log_tbl[i], st.ctl[i] ? "ENABLED" : "DISABLED");
+    return err;
 }
 
-static void get_loglevel(char *args[])
+static int get_loglevel(char *args[])
 {
     char *parm = args[0];
     int i, lvl = -1, err;
@@ -872,7 +895,7 @@ static void get_loglevel(char *args[])
 
     if(! parm || ! *parm)  {
         printf("Loglevel argument required!\n");
-        return;
+        return -1;
     }
 
     if(strcasecmp(parm, "all"))  {
@@ -884,58 +907,61 @@ static void get_loglevel(char *args[])
         }
         if(lvl == -1)  {
             printf("Unknown log level \"%s\"!\n", parm);
-            return;
+            return -1;
         }
     }
 
     if((err = desert_log_state(&st)))  {
         printf("Fail to get log state(%d)!\n", err);
-        return;
+        return err;
     }
 
     if(lvl != -1)  {
         printf("%-10s : %s\n", level_tbl[lvl], st.mask[lvl] ? "ENABLED" : "DISABLED");
-        return;
+    }else  {
+        for(i = 0; i < NUM_LVL; i++)
+            printf("%-10s : %s\n", level_tbl[i], st.mask[i] ? "ENABLED" : "DISABLED");
     }
-
-    for(i = 0; i < NUM_LVL; i++)
-        printf("%-10s : %s\n", level_tbl[i], st.mask[i] ? "ENABLED" : "DISABLED");
+    return err;
 }
 
-static void get_action(char *args[])
+static int get_action(char *args[])
 {
     printf("TODO:\n");
+    return -1;
 }
 
-static void get_throttle(char *args[])
+static int get_throttle(char *args[])
 {
     printf("TODO:\n");
+    return -1;
 }
 
-static void get_counter(char *args[])
+static int get_counter(char *args[])
 {
     printf("TODO:\n");
+    return -1;
 }
 
-static void cmd_get(char *args[], const command_desc *cd)
+static int cmd_get(char *args[], const command_desc *cd)
 {
     char *cmd = args[0];
 
     if(! cmd || ! *cmd)  {
         printf("Argument required!\n");
-        return;
+        return -1;
     }
 
     if(! strcasecmp(cmd, "logtype"))  {
-        get_logtype(args + 1);
+        return get_logtype(args + 1);
     }else if(! strcasecmp(cmd, "loglevel"))  {
-        get_loglevel(args + 1);
+        return get_loglevel(args + 1);
     }else if(! strcasecmp(cmd, "action"))  {
-        get_action(args + 1);
+        return get_action(args + 1);
     }else if(! strcasecmp(cmd, "throttle"))  {
-        get_throttle(args + 1);
+        return get_throttle(args + 1);
     }else if(! strcasecmp(cmd, "counter"))  {
-        get_counter(args + 1);
+        return get_counter(args + 1);
     }else if(! strcasecmp(cmd, "state"))  {
         char *st_str = "UNKNOWN";
         int st = desert_cactus_status();
@@ -946,28 +972,30 @@ static void cmd_get(char *args[], const command_desc *cd)
             st_str = "INACTIVE";
 
         printf("Cactus status: %s\n", st_str);
+        return 0;
     }else if(! strcasecmp(cmd, "version"))  {
         const char *ver;
         int num;
 
         if((ver = desert_cactus_version(&num)))  {
             printf("%sVERSION(%X)\n", ver, num);
-        }else  {
-            printf("Unable to get version info!\n");
+            return 0;
         }
+        printf("Unable to get version info!\n");
     }else  {
         printf("Unrecognized argument \"%s\"!\n", cmd);
     }
+    return -1;
 }
 
-static void set_front_end(char *args[])
+static int set_front_end(char *args[])
 {
     verdict_record *r;
-    int st, err;
+    int st, err = 0;
 
     if(! args[0] || ! args[0][0])  {
         printf("Argument required!\n");
-        return;
+        return -1;
     }
 
     if(! strcasecmp(args[0], "on"))  {
@@ -976,7 +1004,7 @@ static void set_front_end(char *args[])
         st = 0;
     }else  {
         printf("Invalid state spec \"%s\"!\n", args[0]);
-        return;
+        return -1;
     }
 
     pthread_mutex_lock(&record_lock);
@@ -988,7 +1016,7 @@ static void set_front_end(char *args[])
         goto out;
     }else if(st)  {
         if((err = desert_register_fe(0, fe_cb, NULL)))  {
-            printf("Fail to self register as front-end(%d)!", err);
+            printf("Failed to self register as front-end(%d)!\n", err);
             goto out;
         }else  {
             printf("Registered as front-end.\n");
@@ -1016,15 +1044,16 @@ static void set_front_end(char *args[])
     }
  out:
     pthread_mutex_unlock(&record_lock);
+    return err;
 }
 
-static void set_logtype(char *args[])
+static int set_logtype(char *args[])
 {
     int i, type = -1, st, err;
 
     if(! args[0] || ! args[0][0] || ! args[1] || ! args[1][0])  {
         printf("Logtype argument required!\n");
-        return;
+        return -1;
     }
 
     if(strcasecmp(args[0], "all"))  {
@@ -1036,7 +1065,7 @@ static void set_logtype(char *args[])
         }
         if(type == -1)  {
             printf("Unknown log type \"%s\"!\n", args[0]);
-            return;
+            return -1;
         }
     }
 
@@ -1046,25 +1075,25 @@ static void set_logtype(char *args[])
         st = 0;
     }else  {
         printf("Invalid state spec \"%s\"!\n", args[1]);
-        return;
+        return -1;
     }
 
     if((err = desert_log_set_type_enabled(type, st)))  {
         printf("Fail to enable/disable log type(%d)!\n", err);
-        return;
+    }else  {
+        printf("Successfully %s log type \"%s.\n",
+               st ? "enabled" : "disabled", args[0]);
     }
-
-    printf("Successfully %s log type \"%s.\n",
-           st ? "enabled" : "disabled", args[0]);
+    return err;
 }
 
-static void set_loglevel(char *args[])
+static int set_loglevel(char *args[])
 {
     int i, lvl = -1, st, err;
 
     if(! args[0] || ! args[0][0] || ! args[1] || ! args[1][0])  {
         printf("Loglevel argument required!\n");
-        return;
+        return -1;
     }
 
     if(strcasecmp(args[0], "all"))  {
@@ -1076,7 +1105,7 @@ static void set_loglevel(char *args[])
         }
         if(lvl == -1)  {
             printf("Unknown log type \"%s\"!\n", args[0]);
-            return;
+            return -1;
         }
     }
 
@@ -1086,36 +1115,38 @@ static void set_loglevel(char *args[])
         st = 0;
     }else  {
         printf("Invalid state spec \"%s\"!\n", args[1]);
-        return;
+        return -1;
     }
 
     if((err = desert_log_set_level_enabled(lvl, st)))  {
         printf("Fail to enable/disable log level(%d)!\n", err);
-        return;
+    }else  {
+        printf("Successfully %s log level \"%s.\n",
+               st ? "enabled" : "disabled", args[0]);
     }
-
-    printf("Successfully %s log level \"%s.\n",
-           st ? "enabled" : "disabled", args[0]);
+    return err;
 }
 
-static void set_action(char *args[])
+static int set_action(char *args[])
 {
     printf("TODO:\n");
+    return -1;
 }
 
-static void set_throttle(char *args[])
+static int set_throttle(char *args[])
 {
     printf("TODO:\n");
+    return -1;
 }
 
-static void set_state(char *args[])
+static int set_state(char *args[])
 {
     char *parm = args[0];
     int st, err;
 
     if(! parm || ! *parm)  {
         printf("Argument required!\n");
-        return;
+        return -1;
     }
 
     if(! strcasecmp(parm, "on"))  {
@@ -1124,59 +1155,72 @@ static void set_state(char *args[])
         st = 0;
     }else  {
         printf("Invalid state spec \"%s\"!\n", parm);
-        return;
+        return -1;
     }
 
     if((err = desert_switch_cactus(st)))  {
         printf("Error switching cactus status(%d)!\n", err);
-        return;
+    }else  {
+        printf("Cactus status switched %s.\n", st ? "ACTIVE" : "INACTIVE");
     }
-
-    printf("Cactus status switched %s.\n", st ? "ACTIVE" : "INACTIVE");
+    return err;
 }
 
-static void cmd_set(char *args[], const command_desc *cd)
+static int cmd_set(char *args[], const command_desc *cd)
 {
     char *cmd = args[0];
 
     if(! cmd || ! *cmd)  {
         printf("Argument required!\n");
-        return;
+        return -1;
     }
 
     if(! strcasecmp(cmd, "front-end"))  {
-        set_front_end(args + 1);
+        return set_front_end(args + 1);
     }else if(! strcasecmp(cmd, "logtype"))  {
-        set_logtype(args + 1);
+        return set_logtype(args + 1);
     }else if(! strcasecmp(cmd, "loglevel"))  {
-        set_loglevel(args + 1);
+        return set_loglevel(args + 1);
     }else if(! strcasecmp(cmd, "action"))  {
-        set_action(args + 1);
+        return set_action(args + 1);
     }else if(! strcasecmp(cmd, "state"))  {
-        set_state(args + 1);
+        return set_state(args + 1);
     }else if(! strcasecmp(cmd, "throttle"))  {
-        set_throttle(args + 1);
+        return set_throttle(args + 1);
     }else  {
         printf("Unrecognized argument \"%s\"!\n", cmd);
     }
+    return -1;
 }
 
-static void cmd_shutdown(char *args[], const command_desc *cd)
+static int cmd_shutdown(char *args[], const command_desc *cd)
 {
-    desert_shutdown();
-    printf("Done.\n");
-    exit(0);
+    int err = desert_shutdown();
+
+    if(err)  {
+        printf("Failed(%d)!\n", err);
+    }else  {
+        printf("Done.\n");
+        exit(0);
+    }
+    return err;
 }
 
-static void cmd_flush(char *args[], const command_desc *cd)
+static int cmd_flush(char *args[], const command_desc *cd)
 {
-    desert_flush_logs();
-    printf("Done.\n");
+    int err = desert_flush_logs();
+
+    if(err)
+        printf("Failed(%d)!\n", err);
+    else
+        printf("Done.\n");
+    return err;
 }
 
-static void cmd_rule(char *args[], const command_desc *cd)
+static int cmd_rule(char *args[], const command_desc *cd)
 {
     printf("TODO:\n");
+    return -1;
 }
 
 static char **tokenize(char ***toks, size_t *sz, char *str)
@@ -1194,23 +1238,24 @@ static char **tokenize(char ***toks, size_t *sz, char *str)
     if(! *toks)
         ERROR("OOM!");
 
-    for(space = 1, t = *toks, p = str; *p; p++)  {
+    for(space = 1, t = *toks, p = str; *p;)  {
         if(! quoted && ! squoted && isspace(*p))  {
             *p = '\0';
             space = 1;
+            p++;
             continue;
         }
-        if(! squoted && *p == '"')  {
+        if(! squoted && *p == '\"')  {
             *p = '\0';
-            quoted = !quoted;
-            if(! quoted)
-                memmove(p, p + 1, strlen(p + 1) + 1);
+            quoted = ! quoted;
+            memmove(p, p + 1, strlen(p + 1) + 1);
+            continue;
         }
         if(! quoted && *p == '\'')  {
             *p = '\0';
             squoted = ! squoted;
-            if(! squoted)
-                memmove(p, p + 1, strlen(p + 1) + 1);
+            memmove(p, p + 1, strlen(p + 1) + 1);
+            continue;
         }
 
         if(space)  {
@@ -1228,35 +1273,35 @@ static char **tokenize(char ***toks, size_t *sz, char *str)
                 }
             }
         }
+        p++;
     }
     if(quoted || squoted)
         return NULL;
     t = *toks;
     *(t + cnt) = NULL;
+
     return *toks;
 }
 
-static void dispatch_cmd(char **toks)
+static int dispatch_cmd(char **toks)
 {
     const command_desc *cd = cmd_tbl;
 
-    if(! *toks || ! **toks)
-        return;
-
     while(cd->cmd)  {
         if(! strcmp(cd->cmd, toks[0]))  {
-            cd->func(toks + 1, cd);
-            return;
+            return cd->func(toks + 1, cd);
         }
         cd++;
     }
-    printf("Unrecognized command, type help for help.\n");
+    printf("Unrecognized command \"%s\", type help for help.\n", toks[0]);
+    return -1;
 }
 
-static void parse_cmd(char *cmd)
+static void parse_cmd(char *cmd, int *err)
 {
-    char **toks = NULL, *sharp, *p;
-    size_t sz = 0;
+    static char **toks = NULL;
+    static size_t sz = 0;
+    char *p;
 
     while(*cmd)  {
         for(p = cmd; *p; p++)  {
@@ -1279,44 +1324,58 @@ static void parse_cmd(char *cmd)
 
         if(! tokenize(&toks, &sz, cmd))  {
             printf("Malformated command & arguments!\n");
-            return;
+            *err = -1;
+            break;
         }
 
-        dispatch_cmd(toks);
+        if(toks[0] && *toks[0])
+            *err = dispatch_cmd(toks);
         cmd = p;
     }
 }
 
-static void shell(void)
+static int shell(void)
 {
     char prompt[50], *cmd = NULL;
-    int err;
+    int err = 0;
 
     for(;;)  {
         pthread_mutex_lock(&record_lock);
-        if(record_list)
-            sprintf(prompt, "[verdict %llu] >", record_list->req[0].id);
-        else if(front_end)
-            strcpy(prompt, "[front end] >");
-        else
-            strcpy(prompt, "[lotus shell] >");
+        if(err)  {
+            if(record_list)
+                sprintf(prompt, "%d|verdict %llu >", err, record_list->req[0].id);
+            else if(front_end)
+                sprintf(prompt, "%d|front end >", err);
+            else
+                sprintf(prompt, "%d|lotus shell >", err); 
+        }else  {
+            if(record_list)
+                sprintf(prompt, "verdict %llu >", record_list->req[0].id);
+            else if(front_end)
+                strcpy(prompt, "front end >");
+            else
+                strcpy(prompt, "lotus shell >"); 
+        }
         pthread_mutex_unlock(&record_lock);
 
 #ifndef ANDROID_CHANGES
         if(cmd)
             free(cmd);
         if(! (cmd = readline(prompt)))
-            return;
+            break;
         add_history(cmd);
 #else
         char buf[1024];
 
         printf("%s", prompt);
         if(! (cmd = fgets(buf, sizeof(buf), stdin)))
-            return;
+            break;
 #endif
-        parse_cmd(cmd);
+        parse_cmd(cmd, &err);
     }
+    printf("exit\n");
+
+    return err;
 }
 
 int main(int argc, char *argv[])
@@ -1472,12 +1531,10 @@ int main(int argc, char *argv[])
             err = desert_shutdown();
             break;
         case CMD_SHELL:
-            shell();
-            err = 0;
-            break;
+            return shell();
         case CMD_COMMAND:
-            parse_cmd(command);
             err = 0;
+            parse_cmd(command, &err);
             break;
         case CMD_VERSION:
             ver = desert_cactus_version(&ver_num);

@@ -647,7 +647,7 @@ static int get_conn_cb(void *rsp, size_t sz, int flags, void *ud)
     return ctx->cb(conn, ctx->ud);
 }
 
-void desert_get_proc_conn(pid_t pid, desert_conn_cb cb, void *ud)
+int desert_get_proc_conn(pid_t pid, desert_conn_cb cb, void *ud)
 {
     msg_query_nw_req req = {
         .type = TYPE_PROC,
@@ -658,11 +658,11 @@ void desert_get_proc_conn(pid_t pid, desert_conn_cb cb, void *ud)
 
     assert(__initialized);
     req.pid = pid;
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
-                              &req, sizeof(req), get_conn_cb, &ctx, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                                     &req, sizeof(req), get_conn_cb, &ctx, 0);
 }
 
-void desert_get_prog_conn(const char *path, uid_t uid, desert_conn_cb cb, void *ud)
+int desert_get_prog_conn(const char *path, uid_t uid, desert_conn_cb cb, void *ud)
 {
     char _req[sizeof(msg_query_nw_req) + strlen(path) + 1];
     msg_query_nw_req *req = (msg_query_nw_req *)&_req;
@@ -674,11 +674,11 @@ void desert_get_prog_conn(const char *path, uid_t uid, desert_conn_cb cb, void *
     req->type = TYPE_PROG;
     req->uid = uid;
     strcpy(req->path, path);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
-                              req, sizeof(_req), get_conn_cb, &ctx, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                                     req, sizeof(_req), get_conn_cb, &ctx, 0);
 }
 
-void desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud)
+int desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud)
 {
     msg_query_nw_req req = {
         .type = TYPE_USER,
@@ -689,8 +689,8 @@ void desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud)
 
     assert(__initialized);
     req.uid = uid;
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
-                              &req, sizeof(req), get_conn_cb, &ctx, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                                     &req, sizeof(req), get_conn_cb, &ctx, 0);
 }
 
 static int cp_conn_cb(void *rsp, size_t sz, int flags, void *ud)
@@ -717,7 +717,7 @@ static int cp_conn_cb(void *rsp, size_t sz, int flags, void *ud)
     return 0;
 }
 
-void desert_get_all_proc_conn(list *conns, pid_t pid)
+int desert_get_all_proc_conn(list *conns, pid_t pid)
 {
     msg_query_nw_req req = {
         .type = TYPE_PROC,
@@ -726,11 +726,11 @@ void desert_get_all_proc_conn(list *conns, pid_t pid)
     assert(__initialized);
     req.pid = pid;
     list_init(conns);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
-                              &req, sizeof(req), cp_conn_cb, conns, 0);
+   return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                                    &req, sizeof(req), cp_conn_cb, conns, 0);
 }
 
-void desert_get_all_prog_conn(list *conns, const char *path, uid_t uid)
+int desert_get_all_prog_conn(list *conns, const char *path, uid_t uid)
 {
     char _req[sizeof(msg_query_nw_req) + strlen(path) + 1];
     msg_query_nw_req *req = (msg_query_nw_req *)&_req;
@@ -740,11 +740,11 @@ void desert_get_all_prog_conn(list *conns, const char *path, uid_t uid)
     req->uid = uid;
     strcpy(req->path, path);
     list_init(conns);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
-                              req, sizeof(_req), cp_conn_cb, conns, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                                     req, sizeof(_req), cp_conn_cb, conns, 0);
 }
 
-void desert_get_all_user_conn(list *conns, uid_t uid)
+int desert_get_all_user_conn(list *conns, uid_t uid)
 {
     msg_query_nw_req req = {
         .type = TYPE_USER,
@@ -753,8 +753,8 @@ void desert_get_all_user_conn(list *conns, uid_t uid)
     assert(__initialized);
     req.uid = uid;
     list_init(conns);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
-                              &req, sizeof(req), cp_conn_cb, conns, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_NW_CONNECTION,
+                                     &req, sizeof(req), cp_conn_cb, conns, 0);
 }
 
 int desert_get_conn_counter(__u16 zone, const conn_parm *parm, msg_nw_counter *counter)
@@ -864,7 +864,7 @@ static int get_obj_cb(void *rsp, size_t sz, int flags, void *ud)
     }
 }
 
-void desert_get_fw_procs(desert_proc_cb cb, void *ud)
+int desert_get_fw_procs(desert_proc_cb cb, void *ud)
 {
     msg_query_fw_req req = {
         .type = TYPE_PROC,
@@ -877,11 +877,11 @@ void desert_get_fw_procs(desert_proc_cb cb, void *ud)
         .ud = ud,
     };
 
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), get_obj_cb, &ctx, 0);
+   return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                    &req, sizeof(req), get_obj_cb, &ctx, 0);
 }
 
-void desert_get_fw_progs(int flags, desert_prog_cb cb, void *ud)
+int desert_get_fw_progs(int flags, desert_prog_cb cb, void *ud)
 {
     msg_query_fw_req req = {
         .type = TYPE_PROG,
@@ -894,11 +894,11 @@ void desert_get_fw_progs(int flags, desert_prog_cb cb, void *ud)
         .ud = ud,
     };
 
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), get_obj_cb, &ctx, 0);
+   return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                    &req, sizeof(req), get_obj_cb, &ctx, 0);
 }
 
-void desert_get_fw_users(int flags, desert_user_cb cb, void *ud)
+int desert_get_fw_users(int flags, desert_user_cb cb, void *ud)
 {
     msg_query_fw_req req = {
         .type = TYPE_USER,
@@ -911,11 +911,11 @@ void desert_get_fw_users(int flags, desert_user_cb cb, void *ud)
         .ud = ud,
     };
 
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), get_obj_cb, &ctx, 0);
+   return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                    &req, sizeof(req), get_obj_cb, &ctx, 0);
 }
 
-void desert_get_procs_of_prog(const char *path, desert_proc_cb cb, void *ud)
+int desert_get_procs_of_prog(const char *path, desert_proc_cb cb, void *ud)
 {
     char _req[sizeof(msg_query_fw_req) + strlen(path) + 1];
     msg_query_fw_req *req = (msg_query_fw_req *)&_req;
@@ -929,11 +929,11 @@ void desert_get_procs_of_prog(const char *path, desert_proc_cb cb, void *ud)
     req->by_which = BY_PROG;
     req->uid = 0;
     strcpy(req->path, path);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              req, sizeof(_req), get_obj_cb, &ctx, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                     req, sizeof(_req), get_obj_cb, &ctx, 0);
 }
 
-void desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud)
+int desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud)
 {
     msg_query_fw_req req = {
         .type = TYPE_PROC,
@@ -946,8 +946,8 @@ void desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud)
         .ud = ud,
     };
 
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), get_obj_cb, &ctx, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                     &req, sizeof(req), get_obj_cb, &ctx, 0);
 }
 
 static int cp_obj_cb(void *rsp, size_t sz, int flags, void *ud)
@@ -968,7 +968,7 @@ static int cp_obj_cb(void *rsp, size_t sz, int flags, void *ud)
     return 0;
 }
 
-void desert_get_all_fw_procs(list *procs)
+int desert_get_all_fw_procs(list *procs)
 {
     msg_query_fw_req req = {
         .type = TYPE_PROC,
@@ -977,11 +977,11 @@ void desert_get_all_fw_procs(list *procs)
     };
 
     list_init(procs);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), cp_obj_cb, procs, 0);
+   return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                    &req, sizeof(req), cp_obj_cb, procs, 0);
 }
 
-void desert_get_all_fw_progs(list *progs, int flags)
+int desert_get_all_fw_progs(list *progs, int flags)
 {
     msg_query_fw_req req = {
         .type = TYPE_PROG,
@@ -990,11 +990,11 @@ void desert_get_all_fw_progs(list *progs, int flags)
     };
 
     list_init(progs);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), cp_obj_cb, progs, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                     &req, sizeof(req), cp_obj_cb, progs, 0);
 }
 
-void desert_get_all_fw_users(list *users, int flags)
+int desert_get_all_fw_users(list *users, int flags)
 {
     msg_query_fw_req req = {
         .type = TYPE_USER,
@@ -1003,11 +1003,11 @@ void desert_get_all_fw_users(list *users, int flags)
     };
 
     list_init(users);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), cp_obj_cb, users, 0);
+   return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                    &req, sizeof(req), cp_obj_cb, users, 0);
 }
 
-void desert_get_all_procs_of_prog(list *procs, const char *path)
+int desert_get_all_procs_of_prog(list *procs, const char *path)
 {
     char _req[sizeof(msg_query_fw_req) + strlen(path) + 1];
     msg_query_fw_req *req = (msg_query_fw_req *)&_req;
@@ -1017,11 +1017,11 @@ void desert_get_all_procs_of_prog(list *procs, const char *path)
     req->uid = 0;
     strcpy(req->path, path);
     list_init(procs);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              req, sizeof(_req), cp_obj_cb, procs, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                     req, sizeof(_req), cp_obj_cb, procs, 0);
 }
 
-void desert_get_all_procs_of_user(list *procs, uid_t uid)
+int desert_get_all_procs_of_user(list *procs, uid_t uid)
 {
     msg_query_fw_req req = {
         .type = TYPE_PROC,
@@ -1030,8 +1030,8 @@ void desert_get_all_procs_of_user(list *procs, uid_t uid)
     };
 
     list_init(procs);
-    rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
-                              &req, sizeof(req), cp_obj_cb, procs, 0);
+    return rpclite_transact_callback(&rpc_ctx, CACTUS_REQ_QUERY_FW_OBJECT,
+                                     &req, sizeof(req), cp_obj_cb, procs, 0);
 }
 
 int desert_set_proc_verdict(pid_t pid, int verd)

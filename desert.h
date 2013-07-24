@@ -145,13 +145,13 @@ static inline void fw_objs_free(list *objs)
  */
 typedef int (*desert_conn_cb)(const msg_nw_connection *conn, void *ud);
 
-void desert_get_proc_conn(pid_t pid, desert_conn_cb cb, void *ud);
-void desert_get_prog_conn(const char *path, uid_t uid, desert_conn_cb cb, void *ud);
-void desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud);
+int desert_get_proc_conn(pid_t pid, desert_conn_cb cb, void *ud);
+int desert_get_prog_conn(const char *path, uid_t uid, desert_conn_cb cb, void *ud);
+int desert_get_user_conn(uid_t uid, desert_conn_cb cb, void *ud);
 
-void desert_get_all_proc_conn(list *conns, pid_t pid);
-void desert_get_all_prog_conn(list *conns, const char *path, uid_t uid);
-void desert_get_all_user_conn(list *conns, uid_t uid);
+int desert_get_all_proc_conn(list *conns, pid_t pid);
+int desert_get_all_prog_conn(list *conns, const char *path, uid_t uid);
+int desert_get_all_user_conn(list *conns, uid_t uid);
 
 int desert_get_conn_counter(__u16 zone, const conn_parm *parm, msg_nw_counter *counter);
 int desert_get_proc_counter(pid_t pid, msg_nw_counter *counter);
@@ -167,17 +167,17 @@ typedef int (*desert_proc_cb)(const msg_proc_res *proc, void *ud);
 
 #define ITER_F_ACTIVE 1         /* get active fw objects only */
 
-void desert_get_fw_procs(desert_proc_cb cb, void *ud);
-void desert_get_fw_progs(int flags, desert_prog_cb cb, void *ud);
-void desert_get_fw_users(int flags, desert_user_cb cb, void *ud);
-void desert_get_procs_of_prog(const char *path, desert_proc_cb cb, void *ud);
-void desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud);
+int desert_get_fw_procs(desert_proc_cb cb, void *ud);
+int desert_get_fw_progs(int flags, desert_prog_cb cb, void *ud);
+int desert_get_fw_users(int flags, desert_user_cb cb, void *ud);
+int desert_get_procs_of_prog(const char *path, desert_proc_cb cb, void *ud);
+int desert_get_procs_of_user(uid_t uid, desert_proc_cb cb, void *ud);
 
-void desert_get_all_fw_procs(list *procs);
-void desert_get_all_fw_progs(list *progs, int flags);
-void desert_get_all_fw_users(list *users, int flags);
-void desert_get_all_procs_of_prog(list *procs, const char *path);
-void desert_get_all_procs_of_user(list *procs, uid_t uid);
+int desert_get_all_fw_procs(list *procs);
+int desert_get_all_fw_progs(list *progs, int flags);
+int desert_get_all_fw_users(list *users, int flags);
+int desert_get_all_procs_of_prog(list *procs, const char *path);
+int desert_get_all_procs_of_user(list *procs, uid_t uid);
 
 #define ACTION_TARGET(action)  ((action) & TARGET_MASK)
 #define ACTION_VERDICT(action)  ((action) >> VERDICT_SHIFT)

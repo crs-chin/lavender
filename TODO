@@ -19,10 +19,9 @@ CACTUS TODO:
 35. emacs startup dns resolve not work for udp verdict.
 37. config file for lavender gtk client.
 
-* 41. more lavender state to be save in rule list db
 * 43. fw object action alter API not implemented
-* 46. return error code of lotus shell command
 * 47. fw object default action API not implemented
+* 48. mechanism to notify client about kernel feature unavailability
 
 android porting:
 * 37. verdict request under screenlock
