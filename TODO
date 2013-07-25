@@ -22,6 +22,7 @@ CACTUS TODO:
 * 43. fw object action alter API not implemented
 * 47. fw object default action API not implemented
 * 48. mechanism to notify client about kernel feature unavailability
+* 49. GC required to recollect memory
 
 android porting:
 * 37. verdict request under screenlock

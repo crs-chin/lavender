@@ -38,21 +38,20 @@ int cactus_be_send_printf(int type, const char *fmt, ...);
 #define CACTUS_BE_MSG(fmt,args...)                  \
     cactus_be_send_printf(INFO_MSG, fmt, ##args)
 
-#define CACTUS_BE_RATELIMIT_INTERVAL 10000
-
 #define ___CACTUS_BE_MSG_RATELIMIT(rl,key,fmt,args...)                  \
     do{if(! __rate_limit(rl,key)) CACTUS_BE_MSG(fmt,##args);}while(0)
 
-#define __CACTUS_BE_MSG_RATELIMIT(key,fmt,args...)      \
-    {DEFINE_RATELIMIT(rl,CACTUS_BE_RATELIMIT_INTERVAL); \
+#define __CACTUS_BE_MSG_RATELIMIT(key,timeout,fmt,args...)  \
+    {DEFINE_RATELIMIT(rl,timeout); \
         ___CACTUS_BE_MSG_RATELIMIT(&rl,key,fmt,##args);}
 
 #define CACTUS_BE_MSG_RATELIMIT(fmt,args...)    \
-    __CACTUS_BE_MSG_RATELIMIT(NULL,fmt,##args)
+    __CACTUS_BE_MSG_RATELIMIT(NULL,10000,fmt,##args)
 
+/* don't report too frequently for the same process, 100sec timeout */
 #define CACTUS_BE_MSG_RATELIMIT_PID(pid,fmt,args...)            \
     {char __key[20]; snprintf(__key, sizeof(__key), "%u", pid); \
-        __CACTUS_BE_MSG_RATELIMIT(__key,fmt,##args);}
+        __CACTUS_BE_MSG_RATELIMIT(__key,100000,fmt,##args);}
 
 __END_DECLS
 
