@@ -35,6 +35,7 @@
 #include "branch.h"
 #include "jhash.h"
 #include "msg_base.h"
+#include "timer.h"
 #include "nfct.h"
 #include "sock_stat.h"
 #include "fd_lookup.h"
@@ -53,6 +54,8 @@
 #endif
 
 #define VERDICT_DEBOUNCE_TIMER 45
+
+#define FW_TABLE_GC_TIMER 30000
 
 /* all connections with this mark will be nuked */
 #define BLACK_HOLE ((__u32)-1)
@@ -75,6 +78,7 @@ struct _fw_table{
     hlist_head *user_table;
     fw_counter counter;
     list verd;
+    list procs;
     fw_stat stat;
     __u64 rid;
     /* read only */
@@ -82,6 +86,7 @@ struct _fw_table{
     nfct_t *ct;
     /* jhash */
     __u32 initval;
+    timer gc_timer;
 };
 
 #define FW_MSG_KILL 1
@@ -115,6 +120,8 @@ static const char *verd_string[] = {
     "denied",               /* packet dropped */
     "killed",               /* terminate process */
 };
+
+static int gc(void *ud);
 
 static inline void table_lock(void)
 {
@@ -202,6 +209,7 @@ static int __do_init(fw_table *t, const fw_cb *cb, nfct_t *ct)
     memset(t, 0, sizeof(*t));
     pthread_mutex_init(&t->lock, NULL);
     list_init(&t->verd);
+    list_init(&t->procs);
     memcpy(&t->cbs, cb, sizeof(*cb));
     t->ct = ct;
 
@@ -238,6 +246,12 @@ static int __do_init(fw_table *t, const fw_cb *cb, nfct_t *ct)
     }
     LOG_INFO("user hash size %u", t->user_sz);
 
+    timer_init(&t->gc_timer, NULL, gc, NULL);
+    if(timer_register_src(&t->gc_timer))  {
+        LOG_EMERG("unable to register fw table gc timer");
+        goto err_cleanup;
+    }
+
     msg_work.handler = async_msg_handler;
     if(async_register_handler(&msg_work))  {
         LOG_EMERG("unable to regiser fw table async work");
@@ -252,6 +266,7 @@ static int __do_init(fw_table *t, const fw_cb *cb, nfct_t *ct)
     free_if(t->ident_table);
     free_if(t->proc_table);
     free_if(t->user_table);
+    timer_unregister_src(&t->gc_timer);
     return -1;
 }
 
@@ -451,6 +466,7 @@ static int __proc_insert(fw_proc *proc)
             return -1;
     }
     hlist_prepend(h, &proc->node);
+    list_append(&init_table.procs, &proc->list);
     init_table.stat.procs++;
     return 0;
 }
@@ -458,6 +474,7 @@ static int __proc_insert(fw_proc *proc)
 static inline void __proc_unhash(fw_proc *proc)
 {
     hlist_delete(&proc->node);
+    list_delete(&proc->list);
     init_table.stat.procs--;
 }
 
@@ -648,6 +665,7 @@ static fw_proc *proc_new(fd_owner *fo)
 		strcpy(p->exe, fo->exe);
         /* below filled on insertion */
         p->ident = NULL;
+        list_init(&p->list);
         list_init(&p->ident_entry);
         list_init(&p->user_entry);
         branch_init(&p->conns);
@@ -857,6 +875,12 @@ static int __ident_judge(fw_ident *fi, fd_owner *fo)
     return tg;
 }
 
+static inline void __sched_gc(void)
+{
+    if(! __timer_scheded(&init_table.gc_timer))
+        __timer_sched(&init_table.gc_timer, TIMER_INTERVAL, FW_TABLE_GC_TIMER);
+}
+
 static int ___walk_table(fd_owner *fo, fw_verd_grp **vgrp, __u64 *vid)
 {
     fw_proc *proc;
@@ -864,7 +888,7 @@ static int ___walk_table(fd_owner *fo, fw_verd_grp **vgrp, __u64 *vid)
     fw_ident *fi = NULL;
     fw_user *user;
     fw_verd *fv;
-    int verd;
+    int err, verd;
 
     if((proc = __proc_lookup(fo->pid)))  {
         verd = do_verdict(&proc->action);
@@ -908,6 +932,7 @@ static int ___walk_table(fd_owner *fo, fw_verd_grp **vgrp, __u64 *vid)
         list_append(&fi->procs, &proc->ident_entry);
         list_append(&user->procs, &proc->user_entry);
         __proc_insert(proc);
+        __sched_gc();
     }else  {
         LOG_EMERG("unable to alloc new fw proc");
         return FW_DROP;
@@ -1596,6 +1621,39 @@ static void __proc_delete(fw_proc *proc)
     counter_add(&init_table.counter, &proc->counter);
     __proc_release(proc);
     proc_free(proc);
+}
+
+static int __gc()
+{
+    fw_proc *proc, *n;
+    int cnt = 0, cont = 0;
+
+    /* currently there's only one condition that fw proc won't be
+       freed, that is when the proc was denied to access network, no
+       connection shall be establsihed and won't notify fw table about
+       it, where fw proc was validate and freed */
+    list_for_each_entry_safe(proc, n, &init_table.procs, list)  {
+        /* ?? depend on conntrack to free */
+        if(proc->conns.cnt > 0)
+            continue;
+        if(proc_validate(proc->pid, proc->magic))  {
+            __proc_delete(proc);
+            continue;
+        }
+        cont = 1;
+    }
+    LOG_INFO("GC: %d recollected, %s", cnt, cont ? "continue" : "stop");
+    return cont;
+}
+
+static int gc(void *ud)
+{
+    int cont;
+
+    table_lock();
+    cont = __gc();
+    table_unlock();
+    return cont;
 }
 
 static void __conn_delete(conn_entry *e)

@@ -127,6 +127,7 @@ struct _fw_proc{
     /* proc dir ino */
     ino_t magic;
     fw_ident *ident;
+    list list;
     /* prog belong to, one prog may spawn multiple proc */
     list ident_entry;
     /* user belong to, one user may spawn multiple proc */

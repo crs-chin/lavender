@@ -1,6 +1,6 @@
 all:test
 
-CFLAGS += -DTEST_NFCT
+CFLAGS += -DTEST_TIMER -DHAVE_CONFIG_H -DHAVE_SYS_TIMERFD_H -Iport -I../
 LDFLAGS += -lpthread -lrt
 
-test:test.o ginkgo.c nl.o nfct.o util.o 
+test:test.o timer.o

@@ -19,10 +19,12 @@
  */
 
 #include <assert.h>
+#include <errno.h>
 #include <inttypes.h>
 #include <string.h>
 #include <malloc.h>
 #include <time.h>
+#include <signal.h>
 #include <pthread.h>
 #include <sys/types.h>
 #include <gtk/gtk.h>
@@ -36,6 +38,7 @@ typedef struct _verdict_req verdict_req;
 typedef struct _verdict_obj verdict_obj;
 
 struct _verdict_obj{
+    int stale;
     uid_t uid, gid;
     pid_t pid, ppid, sid;
     char *next;
@@ -120,14 +123,16 @@ static int __setup_window(const verdict_req *vreq)
 
     gtk_tree_store_clear(tree_store);
     verdict_obj_for_each(vobj, vreq)  {
-        gtk_tree_store_append(tree_store, &iter1, NULL);
-        gtk_tree_store_set(tree_store, &iter1, COL_TAG, vobj->exe, -1);
+        if(! vobj->stale)  {
+            gtk_tree_store_append(tree_store, &iter1, NULL);
+            gtk_tree_store_set(tree_store, &iter1, COL_TAG, vobj->exe, -1);
 
-        __INSERT_ID("User ID", vobj->uid);
-        __INSERT_ID("Group ID", vobj->gid);
-        __INSERT_ID("PID", vobj->pid);
-        __INSERT_ID("Parent PID", vobj->ppid);
-        __INSERT_ID("Session ID", vobj->sid);
+            __INSERT_ID("User ID", vobj->uid);
+            __INSERT_ID("Group ID", vobj->gid);
+            __INSERT_ID("PID", vobj->pid);
+            __INSERT_ID("Parent PID", vobj->ppid);
+            __INSERT_ID("Session ID", vobj->sid);
+        }
     }
     gtk_tree_view_expand_all(GTK_TREE_VIEW(tree));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(always_toggle), FALSE);
@@ -187,12 +192,14 @@ static inline int ts_cmp(const struct timespec *a, const struct timespec *b)
 
 static void *desert_gtk_thread(void *arg)
 {
+    verdict_obj *vobj;
     struct timespec ts;
     time_t timeout;
+    int nstale;
 
     for(;;)  {
         pthread_mutex_lock(&verdict_lock);
-        do{
+        for(;;)  {
             while(verdict_emit)
                 pthread_cond_wait(&verdict_cond, &verdict_lock);
             while(! verdict_list)
@@ -212,6 +219,17 @@ static void *desert_gtk_thread(void *arg)
                 continue;
             };
 
+            nstale = 0;
+            verdict_obj_for_each(vobj, verdict_current)  {
+                vobj->stale = (kill(vobj->pid, 0) && errno == ESRCH);
+                if(! vobj->stale)
+                    nstale = 1;
+            }
+            if(! nstale)  {
+                g_print("verdict %" PRIu64 " staled, ignore.\n", verdict_current->id);
+                continue;
+            }
+
             timeout = verdict_current->ts.tv_sec - ts.tv_sec;
             if(verdict_current->ts.tv_nsec - ts.tv_nsec > 500000000)
                 timeout++;
@@ -221,7 +239,8 @@ static void *desert_gtk_thread(void *arg)
                 continue;
             }
             verdict_current->timer = time(NULL) + timeout;
-        }while(0);
+            break;
+        }
         verdict_emit = 1;
         verdict_timer = g_timeout_add(1000, timer_tick, NULL);
         pthread_mutex_unlock(&verdict_lock);

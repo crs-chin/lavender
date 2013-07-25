@@ -32,6 +32,8 @@
 #include "linux_timerfd.h"
 #include "cactus_log.h"
 
+#include "test.h"
+
 /**
  * not using ginkgo just to ensure netlink operations to be more
  * realtime.
@@ -125,8 +127,8 @@ static void *thread_func(void *arg)
         if(select(fds, &rd, NULL, NULL, NULL) <= 0)
             continue;
 
-        if(FD_ISSET(pipe_fds[1], &rd))  {
-            empty_fd(pipe_fds[1]);
+        if(FD_ISSET(pipe_fds[0], &rd))  {
+            empty_fd(pipe_fds[0]);
             continue;
         }
 
@@ -163,8 +165,8 @@ int timer_initialize(int flags)
         if(pipe2(pipe_fds, O_NONBLOCK) < 0)
             return -1;
 
-        FD_SET(pipe_fds[1], &timer_fds);
-        max_fds = pipe_fds[1] + 1;
+        FD_SET(pipe_fds[0], &timer_fds);
+        max_fds = pipe_fds[0] + 1;
 
         if(pthread_create(&timer_thread, NULL, thread_func, NULL))  {
             close(pipe_fds[0]);

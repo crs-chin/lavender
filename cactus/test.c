@@ -140,7 +140,6 @@ int main(int argc, char *argv[])
 
 #elif defined(TEST_TIMER)
 
-#include "ginkgo.h"
 #include "timer.h"
 
 int cb(void *ud)
@@ -151,6 +150,7 @@ int cb(void *ud)
 
 int main()
 {
+    struct timespec ts;
     /* ginkgo_ctx *ctx; */
 
     /* if(ginkgo_create(&ctx, TIMER_F_THREAD))  { */
@@ -168,7 +168,11 @@ int main()
     /*     return -1; */
     /* } */
 
-    timer t = TIMER_INIT(NULL, cb, &t);
+    timer t;
+    timer t2;
+
+    timer_init(&t, NULL, cb, &t);
+    timer_init(&t2, NULL, cb, &t2);
 
     if(timer_initialize(0))  {
         printf("fail to init timer\n");
@@ -180,7 +184,14 @@ int main()
         return -1;
     }
 
-    timer_sched(&t, TIMER_INTERVAL, 100);
+    if(timer_register_src(&t2))  {
+        printf("fail to register timer src\n");
+        return -1;
+    }
+
+    timer_sched(&t, TIMER_INTERVAL, 2000);
+    timer_sched(&t2, TIMER_INTERVAL, 1000);
+
     sleep(100);
 }
 
