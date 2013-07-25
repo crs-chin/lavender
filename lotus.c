@@ -1122,7 +1122,7 @@ static int set_loglevel(char *args[])
     if((err = desert_log_set_level_enabled(lvl, st)))  {
         printf("Fail to enable/disable log level(%d)!\n", err);
     }else  {
-        printf("Successfully %s log level \"%s.\n",
+        printf("Successfully %s log level \"%s\".\n",
                st ? "enabled" : "disabled", args[0]);
     }
     return err;

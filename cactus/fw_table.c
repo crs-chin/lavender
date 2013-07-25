@@ -1638,11 +1638,12 @@ static int __gc()
             continue;
         if(proc_validate(proc->pid, proc->magic))  {
             __proc_delete(proc);
+            cnt++;
             continue;
         }
         cont = 1;
     }
-    LOG_INFO("GC: %d recollected, %s", cnt, cont ? "continue" : "stop");
+    LOG_INFO("GC: %d recollected, schedule %s", cnt, cont ? "continue" : "stop");
     return cont;
 }
 
