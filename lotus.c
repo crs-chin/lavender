@@ -1082,7 +1082,7 @@ static int set_logtype(char *args[])
     if((err = desert_log_set_type_enabled(type, st)))  {
         printf("Fail to enable/disable log type(%d)!\n", err);
     }else  {
-        printf("Successfully %s log type \"%s.\n",
+        printf("Successfully %s log type \"%s\".\n",
                st ? "enabled" : "disabled", args[0]);
     }
     return err;
