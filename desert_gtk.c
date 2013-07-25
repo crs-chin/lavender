@@ -19,6 +19,7 @@
  */
 
 #include <assert.h>
+#include <inttypes.h>
 #include <string.h>
 #include <malloc.h>
 #include <time.h>
@@ -137,7 +138,7 @@ static int __setup_window(const verdict_req *vreq)
 static inline void __set_label(time_t val)
 {
     GtkLabel *label = GTK_LABEL(gtk_builder_get_object(verdict_builder, "timer"));;
-    gchar *markup = g_markup_printf_escaped ("<span style=\"italic\">Close in %llu second(s)</span>", val);
+    gchar *markup = g_markup_printf_escaped ("<span style=\"italic\">Close in %" PRIu64 " second(s)</span>", val);
 
     if(label)
         gtk_label_set_markup(label, markup);
@@ -207,7 +208,7 @@ static void *desert_gtk_thread(void *arg)
 
             clock_gettime(CLOCK_MONOTONIC, &ts);
             if(ts_cmp(&ts, &verdict_current->ts) >= 0)  {
-                g_print("verdict %llu expired, ignore.\n", verdict_current->id);
+                g_print("verdict %" PRIu64 " expired, ignore.\n", verdict_current->id);
                 continue;
             };
 
@@ -216,7 +217,7 @@ static void *desert_gtk_thread(void *arg)
                 timeout++;
 
             if(timeout <= TIMER_MIN)  {
-                g_print("verdict %llu expired nearly, ignore.\n", verdict_current->id);;
+                g_print("verdict %" PRIu64 " expired nearly, ignore.\n", verdict_current->id);;
                 continue;
             }
             verdict_current->timer = time(NULL) + timeout;
@@ -227,7 +228,7 @@ static void *desert_gtk_thread(void *arg)
 
         gdk_threads_enter();
         if(__setup_window(verdict_current))  {
-            g_printerr("fail to setup window for verdict id:%llu\n", verdict_current->id);
+            g_printerr("fail to setup window for verdict id:%" PRIu64 "\n", verdict_current->id);
             gdk_threads_leave();
             continue;
         }
@@ -236,6 +237,7 @@ static void *desert_gtk_thread(void *arg)
         gtk_widget_show_all(verdict_win);
         gdk_threads_leave();
     }
+    return NULL;
 }
 
 static inline void emit_verdict(int verd)

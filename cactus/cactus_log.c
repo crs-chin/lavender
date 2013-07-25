@@ -19,6 +19,7 @@
 
 #include <assert.h>
 #include <time.h>
+#include <inttypes.h>
 #include <sys/time.h>
 #include <stdarg.h>
 #include <pthread.h>
@@ -304,8 +305,8 @@ static int __do_log_conntrack(nfct_msg *msg, time_t *t)
         }
         if(counter_avail)  {
             return gardenia_print(log_pool[LOG_CONNTRACK], TIME_FORMAT "IPv4 %s %s%ssrc=%u.%u.%u.%u dst=%u.%u.%u.%u "
-                                  "sport=%u dport=%u pkts=%llu bytes=%llu %ssrc=%u.%u.%u.%u dst=%u.%u.%u.%u "
-                                  "sport=%u dport=%u pkts=%llu bytes=%llu, %smark=%u use=%u\n",
+                                  "sport=%u dport=%u pkts=%" PRIu64 " bytes=%" PRIu64 " %ssrc=%u.%u.%u.%u dst=%u.%u.%u.%u "
+                                  "sport=%u dport=%u pkts=%" PRIu64 " bytes=%" PRIu64 ", %smark=%u use=%u\n",
                                   TIME_ARG(tm),
                                   prot, type, state,
                                   ip_src[0], ip_src[1], ip_src[2], ip_src[3],
@@ -376,8 +377,8 @@ static int __do_log_conntrack(nfct_msg *msg, time_t *t)
         }
         if(counter_avail)  {
             return gardenia_print(log_pool[LOG_CONNTRACK], TIME_FORMAT "IPv6 %s %s%ssrc=%s dst=%s sport=%u dport=%u "
-                                  "pkts=%llu bytes=%llu %ssrc=%s dst=%s sport=%u dport=%u "
-                                  "pkts=%llu bytes=%llu, %smark=%u use=%u\n",
+                                  "pkts=%" PRIu64 " bytes=%" PRIu64 " %ssrc=%s dst=%s sport=%u dport=%u "
+                                  "pkts=%" PRIu64 " bytes=%" PRIu64 ", %smark=%u use=%u\n",
                                   TIME_ARG(tm),
                                   prot, type, state,
                                   inet_ntop(AF_INET6, src.src.u3.ip6, ip6_addr[0], INET6_ADDRSTRLEN) ? : "<INVALID>",

@@ -23,6 +23,7 @@
 #include <string.h>
 #include <time.h>
 #include <malloc.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -181,7 +182,7 @@ static int __nfqm_timeout(void *ud)
         pkt_id = p->pkt_id;
         id = p->id;
         if(! ___pkt_drop(q, p, NF_DROP, 0))
-            LOG_DEBUG("dropped timed out pkt %u, verd id %llu", pkt_id, id);
+            LOG_DEBUG("dropped timed out pkt %u, verd id %" PRIu64, pkt_id, id);
         q->cur = NULL;
         __timer_check(q);
     }else  {
@@ -318,8 +319,8 @@ static void __pkt_phash(nfqm *q, kpkt *p)
                 delta = TCP_MAX_RTO;
             kpkt_init_timer(p, delta);
             ___pkt_drop(q, iter, NF_DROP, 0);
-            LOG_DEBUG("retransmition kpkt %llu received, set delta %u, "
-                      "dropped the existing %llu", p->id, delta, iter->id);
+            LOG_DEBUG("retransmition kpkt %" PRIu64 " received, set delta %u, "
+                      "dropped the existing %" PRIu64 "", p->id, delta, iter->id);
             break;
         }
     }
@@ -337,7 +338,7 @@ static inline void __pkt_ihash(nfqm *q, kpkt *p)
     hlist_for_each_entry(iter, pos, h, inode)  {
         if(iter->pkt_id == p->pkt_id && iter->id == p->id)  {
             ___pkt_drop(q, iter, NF_DROP, 0);
-            LOG_ERROR("unexpected duplicating kpkt %u %llu, dropped the existing",
+            LOG_ERROR("unexpected duplicating kpkt %u %" PRIu64 ", dropped the existing",
                       iter->pkt_id, iter->id);
             break;
         }
@@ -427,10 +428,10 @@ static int __nfqm_pop(nfqm *q, __u64 id, int verd, __u32 mark)
     hlist_for_each_entry_safe(p, pos, n, h, inode)  {
         if(p->id == id)  {
             if(! ___pkt_drop(q, p, verd, mark))
-                LOG_DEBUG("pkt %u with verdict %llu popped, verdict %d",
+                LOG_DEBUG("pkt %u with verdict %" PRIu64 " popped, verdict %d",
                           p->pkt_id, id, verd);
             else
-                LOG_INFO("fail to verdict nfqm pkt %u %llu", p->pkt_id, p->id);
+                LOG_INFO("fail to verdict nfqm pkt %u %" PRIu64 "", p->pkt_id, p->id);
             cnt++;
         }
     }
@@ -441,7 +442,7 @@ void nfqm_pop(nfqm *q, __u64 id, int verd, __u32 mark)
 {
     nfqm_lock(q);
     if(__nfqm_pop(q, id, verd, mark) <= 0)
-        LOG_INFO("no pkt with verdict %llu managed, ignore", id);
+        LOG_INFO("no pkt with verdict %" PRIu64 " managed, ignore", id);
     else
         __timer_check(q);
     nfqm_unlock(q);
@@ -457,11 +458,11 @@ void nfqm_dump(nfqm *q)
         LOG_INFO("dump pkts in queue(%u in total):", q->cnt);
         list_for_each_entry(p, &q->pkts, list)  {
             s = (stamp_tcp *)&p->stamp;
-            LOG_INFO("pkt %u verdict id %llu:" IP_FMT ":%u -> " IP_FMT ":%u",
+            LOG_INFO("pkt %u verdict id %" PRIu64 ":" IP_FMT ":%u -> " IP_FMT ":%u",
                      p->pkt_id, p->id, IP_ARG(s->src), s->tcp.sport, IP_ARG(s->dst), s->tcp.dport);
         }
         list_for_each_entry(p, &q->ipkts, list)  {
-            LOG_INFO("pkt %u verdict id %llu prot %u", p->pkt_id, p->id, p->prot);
+            LOG_INFO("pkt %u verdict id %" PRIu64 " prot %u", p->pkt_id, p->id, p->prot);
         }
     }else  {
         LOG_INFO("no pkts in queue to dump");
@@ -476,12 +477,12 @@ void nfqm_destroy(nfqm *q, int verd, __u32 mark)
     nfqm_lock(q);
     list_for_each_entry_safe(p, n, &q->pkts, list)  {
         if(! ___pkt_drop(q, p, verd, mark))
-            LOG_DEBUG("dropped pkt %u, verd id %llu prot %u on destroy",
+            LOG_DEBUG("dropped pkt %u, verd id %" PRIu64 " prot %u on destroy",
                       p->pkt_id, p->id, p->prot);
     }
     list_for_each_entry_safe(p, n, &q->ipkts, list)  {
         if(! ___pkt_drop(q, p, verd, mark))
-            LOG_DEBUG("dropped pkt %u, verd id %llu prot %u on destroy",
+            LOG_DEBUG("dropped pkt %u, verd id %" PRIu64 " prot %u on destroy",
                       p->pkt_id, p->id, p->prot);
     }
     timer_unregister_src(&q->timer);

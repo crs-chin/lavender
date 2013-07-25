@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <malloc.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -334,7 +335,7 @@ static void on_verdict_req(const msg_verdict_req *req)
     if(req->ts.tv_nsec - ts.tv_nsec > 500000000)
         timeout++;
 
-    printf("\n[%u]  VERDICT REQUEST, ID:%llu, TIMEOUT:%d\n", seq++, req->id, timeout);
+    printf("\n[%u]  VERDICT REQUEST, ID:%" PRIu64 ", TIMEOUT:%d\n", seq++, req->id, timeout);
     msg_fd_owner_for_each(fo, req)  {
         printf("    UID:%u, PID:%u, EXE:%s\n", fo->euid, fo->pid, fo->exe);
         sz += sizeof(*fo) + strlen(fo->exe) + 1;
@@ -405,9 +406,9 @@ static void __list_verd(void)
             timeout = -1;
 
         if(timeout > 0)
-            printf("[%u]  VERDICT REQUEST, ID:%llu, TIMEOUT:%d\n", seq++, req->id, timeout);
+            printf("[%u]  VERDICT REQUEST, ID:%" PRIu64 ", TIMEOUT:%d\n", seq++, req->id, timeout);
         else
-            printf("[%u]  VERDICT REQUEST, ID:%llu, OUTDATED\n", seq++, req->id);
+            printf("[%u]  VERDICT REQUEST, ID:%" PRIu64 ", OUTDATED\n", seq++, req->id);
         msg_fd_owner_for_each(fo, req)  {
             printf("    UID:%u, PID:%u, EXE:%s\n", fo->euid, fo->pid, fo->exe);
         }list_end;
@@ -608,7 +609,7 @@ static void conn_print(const nw_conn *conn)
             prot = protonum;
             break;
         }
-        printf("[%-5llu] IPv4 %s   " IP_FMT "  " IP_FMT "  %u  %u\n",
+        printf("[%-5" PRIu64 "] IPv4 %s   " IP_FMT "  " IP_FMT "  %u  %u\n",
                conn->seq, prot, IP_ARG(p->src.u3.ip), IP_ARG(p->dst.u3.ip),
                ntohs(p->src.u.tcp.port), ntohs(p->dst.u.tcp.port));
         break;
@@ -634,7 +635,7 @@ static void conn_print(const nw_conn *conn)
             prot = protonum;
             break;
         }
-        printf("[%-5llu] IPv6 %s   %s  %s  %u  %u\n",
+        printf("[%-5" PRIu64 "] IPv6 %s   %s  %s  %u  %u\n",
                conn->seq,  prot,
                inet_ntop(AF_INET6, p->src.u3.ip6, ip6_addr[0], INET6_ADDRSTRLEN) ? : "<INVALID>",
                inet_ntop(AF_INET6, p->dst.u3.ip6, ip6_addr[1], INET6_ADDRSTRLEN) ? : "<INVALID>",
@@ -642,7 +643,7 @@ static void conn_print(const nw_conn *conn)
         break;
     }
     default:  {
-        printf("[%-5llu] %u\n", conn->seq, p->src.l3num);
+        printf("[%-5" PRIu64 "] %u\n", conn->seq, p->src.l3num);
         break;
     }
     }
@@ -806,7 +807,7 @@ static int cmd_verd(char *args[], const command_desc *cd)
 
     if(r)  {
         if((err = desert_send_verdict(r->req[0].id, verdict_cmd[i].verd)))
-            printf("Fail to send verdict command for %llu!\n", r->req[0].id);
+            printf("Fail to send verdict command for %" PRIu64 "!\n", r->req[0].id);
         free(r);
     }else  {
         printf("No pending verdict available.\n");
@@ -1343,14 +1344,14 @@ static int shell(void)
         pthread_mutex_lock(&record_lock);
         if(err)  {
             if(record_list)
-                sprintf(prompt, "%d|verdict %llu >", err, record_list->req[0].id);
+                sprintf(prompt, "%d|verdict %" PRIu64 " >", err, record_list->req[0].id);
             else if(front_end)
                 sprintf(prompt, "%d|front end >", err);
             else
                 sprintf(prompt, "%d|lotus shell >", err); 
         }else  {
             if(record_list)
-                sprintf(prompt, "verdict %llu >", record_list->req[0].id);
+                sprintf(prompt, "verdict %" PRIu64 " >", record_list->req[0].id);
             else if(front_end)
                 strcpy(prompt, "front end >");
             else

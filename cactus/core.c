@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -1038,7 +1039,7 @@ static void verdict_pkt(fw_obj *obj, void *ud)
 
     head = obj->fos;
     list_for_each_entry(fo, head, list)  {
-        LOG_INFO("request verdict for %llu pid:%u uid:%u exe:\"%s\"",
+        LOG_INFO("request verdict for %" PRIu64 " pid:%u uid:%u exe:\"%s\"",
                  obj->id, fo->pid, fo->euid, fo->exe);
     }
 }

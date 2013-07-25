@@ -22,6 +22,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -656,10 +657,10 @@ static int be_handler(ipclite_msg *msg, void *ud)
 
         if(verd->verdict >= 0 && verd->verdict < (int)arraysize(nf_verd_tbl))  {
             fw_table_verd(verd->id, verd->verdict);
-            LOG_INFO("received verdict %s to %llu", nf_verd_tbl[verd->verdict], verd->id);
+            LOG_INFO("received verdict %s to %" PRIu64, nf_verd_tbl[verd->verdict], verd->id);
             break;
         }
-        LOG_WARN("invalid verdict %u to %llu received, ignore", verd->verdict, verd->id);
+        LOG_WARN("invalid verdict %u to %" PRIu64 " received, ignore", verd->verdict, verd->id);
         break;
     }
     case IPCLITE_MSG_CLS:  {

@@ -725,9 +725,8 @@ static int rtnl_list_parse(list *out, list *in, int type)
 
 int __rtnl_get_link(list *links, const struct ifinfomsg *ifm, const char *ifname, __u32 ext_mask)
 {
-    ginkgo_msg *msg, *n;
+    ginkgo_msg *msg;
     size_t payload = 0;
-    struct nlmsghdr *nlh;
     struct rtgenmsg rtgen;
     __u16 flags = NLM_F_REQUEST;
     list rsp;
@@ -778,7 +777,7 @@ int __rtnl_get_link(list *links, const struct ifinfomsg *ifm, const char *ifname
  */
 int rtnl_dump_addr(list *addrs, unsigned char pf)
 {
-    ginkgo_msg *msg, *n;
+    ginkgo_msg *msg;
     struct rtgenmsg rtgen = {
         .rtgen_family = pf,
     };
@@ -803,7 +802,6 @@ int rtnl_dump_addr(list *addrs, unsigned char pf)
  */
 int ___rtnl_get_route(list *route, ginkgo_msg *msg, int nofree)
 {
-    ginkgo_msg *m, *n;
     struct nlmsghdr *nlh;
     list rsp;
 

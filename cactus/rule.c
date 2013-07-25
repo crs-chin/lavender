@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <time.h>
 #include <pwd.h>
 
@@ -30,7 +31,7 @@
 #include "rule.h"
 #include "cactus_log.h"
 
-#define COUNTER_FMT "%llu %llu %llu %llu"
+#define COUNTER_FMT "%" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64 ""
 #define COUNTER_ARG(c)                                          \
     (c)->orig_pkts,(c)->orig_bytes,(c)->rep_pkts,(c)->rep_bytes
 
