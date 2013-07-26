@@ -56,7 +56,7 @@
 #define PACKAGE_NAME "lavender"
 
 /* Version number of package */
-#define VERSION "0.2.1"
+#define VERSION "0.2.2"
 
 /* Define to the full name and version of this package. */
 #define PACKAGE_STRING "lavender " VERSION

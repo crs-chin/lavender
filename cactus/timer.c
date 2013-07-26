@@ -32,8 +32,6 @@
 #include "linux_timerfd.h"
 #include "cactus_log.h"
 
-#include "test.h"
-
 /**
  * not using ginkgo just to ensure netlink operations to be more
  * realtime.

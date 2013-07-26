@@ -1,3 +1,10 @@
+lavender (0.2.2) unstable; urgency=low
+  * Internal timer engine not working, fixed
+  * GC support for recollecting fw table proc memory
+  * Misc fixes.
+
+ -- Cross Chin <crs.chin@gmail.com>  Fri, 26 Jul 2013 11:04:12 +0800
+
 lavender (0.2.1) unstable; urgency=low
   * Memory recollection fixed
   * More internal API exported through Lotus shell CLI
