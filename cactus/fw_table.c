@@ -86,6 +86,7 @@ struct _fw_table{
     nfct_t *ct;
     /* jhash */
     __u32 initval;
+    int gc_timeout;
     timer gc_timer;
 };
 
@@ -110,7 +111,22 @@ static __u32 mark_pool = 0;
 static async_handler msg_work = {
     .name = "fw_table_work",
 };
+
+static const int gc_timeout[] = {
+    15 * 1000,
+    30 * 1000,
+    30 * 1000,
+    1 * 60 * 1000,
+    1 * 60 * 1000,
+    2 * 60 * 1000,
+    4 * 60 * 1000,
+    8 * 60 * 1000,
+    16 * 60 * 1000,
+    32 * 60 * 1000,
+};
+
 static fw_table init_table;
+
 
 static const char *verd_string[] = {
     "accepted",             /* accepted, but still check the following
@@ -875,10 +891,11 @@ static int __ident_judge(fw_ident *fi, fd_owner *fo)
     return tg;
 }
 
+/* reset gc timeout value */
 static inline void __sched_gc(void)
 {
-    if(! __timer_scheded(&init_table.gc_timer))
-        __timer_sched(&init_table.gc_timer, TIMER_INTERVAL, FW_TABLE_GC_TIMER);
+    init_table.gc_timeout = 0;
+    __timer_sched(&init_table.gc_timer, 0, gc_timeout[init_table.gc_timeout]);
 }
 
 static int ___walk_table(fd_owner *fo, fw_verd_grp **vgrp, __u64 *vid)
@@ -1643,7 +1660,15 @@ static int __gc()
         }
         cont = 1;
     }
-    LOG_INFO("GC: %d recollected, schedule %s", cnt, cont ? "continue" : "stop");
+
+    if(cont)  {
+        if(init_table.gc_timeout + 1 < arraysize(gc_timeout))
+            init_table.gc_timeout++;
+        __timer_sched(&init_table.gc_timer, 0, gc_timeout[init_table.gc_timeout]);
+        LOG_INFO("GC: %d recollected, sched in %d ms", cnt, gc_timeout[init_table.gc_timeout]);
+    }else  {
+        LOG_INFO("GC: %d recollected, stop", cnt);
+    }
     return cont;
 }
 
