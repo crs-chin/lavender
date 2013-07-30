@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([lavender], [0.2.2], [crs.chin@gmail.com])
+AC_INIT([lavender], [0.2.3], [crs.chin@gmail.com])
 AC_CONFIG_SRCDIR([lavender.c])
 AC_CONFIG_HEADERS(config.h)
 

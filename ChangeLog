@@ -1,3 +1,10 @@
+lavender (0.2.3) unstable; urgency=low
+  * Notify user on verdict request when keyguard activated on Android
+  * Lotus shell support on query all connections
+  * Auto start Avender at installation on Android
+
+ -- Cross Chin <crs.chin@gmail.com>  Tue, 30 Jul 2013 16:28:00 +0800
+
 lavender (0.2.2) unstable; urgency=low
   * Internal timer engine not working, fixed
   * GC support for recollecting fw table proc memory

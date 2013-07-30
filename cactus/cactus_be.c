@@ -42,7 +42,7 @@
 
 static const int cactus_version = 0x00000130;
 static const char cactus_banner[] = "Cactus Runtime - Version " VERSION "\n"
-    "Copyright (C) 2012 Crs Chin<crs.chin@gmail.com>\n";
+    "Copyright (C) 2013 Crs Chin<crs.chin@gmail.com>\n";
 
 #define list_for_each_ipclite_msg_safe(iter,n,head)                     \
     for(iter = list_entry((head)->l_nxt,typeof(*iter),ctl),             \
