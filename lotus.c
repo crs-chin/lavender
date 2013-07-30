@@ -713,7 +713,7 @@ static int list_conn(char *args[])
         path = args[1];
         uid = strtol(args[2], &endp, 0);
         if(*endp)  {
-            printf("Not a valid UID \"%s\", abort!\n", args[1]);
+            printf("Not a valid UID \"%s\", abort!\n", args[2]);
             return -1;
         }
 

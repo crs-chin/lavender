@@ -86,7 +86,7 @@ struct _fw_table{
     nfct_t *ct;
     /* jhash */
     __u32 initval;
-    int gc_timeout;
+    size_t gc_timeout;
     timer gc_timer;
 };
 
@@ -2014,11 +2014,20 @@ void fw_table_for_each_conn_of_proc(pid_t pid, fw_conn_cb cb, void *ud)
 
 void fw_table_for_each_conn_of_prog(const char *path, uid_t uid, fw_conn_cb cb, void *ud)
 {
+    fw_prog *fp;
     fw_ident *fi;
     fw_proc *proc;
 
     table_lock();
-    if((fi = __ident_lookup(uid, path)))  {
+    if(uid == (uid_t)(-1))  {
+        if((fp = __prog_lookup(path)))  {
+            list_for_each_entry(fi, &fp->ident, prog_entry)  {
+                list_for_each_entry(proc, &fi->procs, ident_entry)  {
+                    __proc_for_each_conn(proc, cb, ud);
+                }
+            }
+        }
+    }else if((fi = __ident_lookup(uid, path)))  {
         list_for_each_entry(proc, &fi->procs, ident_entry)  {
             __proc_for_each_conn(proc, cb, ud);
         }
@@ -2028,11 +2037,23 @@ void fw_table_for_each_conn_of_prog(const char *path, uid_t uid, fw_conn_cb cb, 
 
 void fw_table_for_each_conn_of_user(uid_t uid, fw_conn_cb cb, void *ud)
 {
+    hlist_head *h;
+    hlist *pos;
+    size_t i;
     fw_user *fu;
     fw_proc *proc;
 
     table_lock();
-    if((fu = __user_lookup(uid)))  {
+    if(uid == (uid_t)(-1))  {
+        for(i = 0; i < init_table.user_sz; i++)  {
+            h = &init_table.user_table[i];
+            hlist_for_each_entry(fu, pos, h, node)  {
+                list_for_each_entry(proc, &fu->procs, user_entry)  {
+                    __proc_for_each_conn(proc, cb, ud);
+                }
+            }
+        }
+    }else if((fu = __user_lookup(uid)))  {
         list_for_each_entry(proc, &fu->procs, user_entry)  {
             __proc_for_each_conn(proc, cb, ud);
         }

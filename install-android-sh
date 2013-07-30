@@ -154,6 +154,7 @@ if adb shell ps | grep -q lavender; then
     # exit command is asynchrnous
     sleep 1
 fi
+adb shell "am start com.android.avender/com.android.avender.MainActivity"
 adb shell "lavender; sleep 1;"
 if adb shell ps | grep -q lavender; then
     echo "<<<<< done"
