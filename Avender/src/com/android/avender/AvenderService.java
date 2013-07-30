@@ -23,6 +23,7 @@ import android.app.Service;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Notification;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.BroadcastReceiver;
@@ -56,8 +57,10 @@ public class AvenderService extends Service {
     private Context mContext = null;
     private VerdictInfo mVerdictInfo = null;
 
+    private KeyguardManager mKG = null;
     private NotificationManager mNM = null;
-    private final int NOTIFICATION = 19870817;
+    private final int NOTIFICATION_ACTIVE = 19870817;
+    private final int NOTIFICATION_VERDICT = 19871127;
 
     private SharedPreferences mSettings = null;
     private int mCactusState = Javender.CACTUS_INACTIVE;
@@ -136,13 +139,18 @@ public class AvenderService extends Service {
         }
 
         private void onVerdict(VerdictReq req)  {
-            Intent i = new Intent(getApplicationContext(), VerdictRequest.class);
+            mVerdictInfo = new VerdictInfo(req);
 
             Log.i(LOG_TAG, "Verdict request received:" + req.pid + " " + req.uid + " " + req.time);
+            if(mKG.inKeyguardRestrictedInputMode())  {
+                notiVerdict();
+            }else  {
+                Intent i = new Intent(getApplicationContext(), VerdictRequest.class);
 
-            mVerdictInfo = new VerdictInfo(req);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mNM.cancel(NOTIFICATION_VERDICT);
+                startActivity(i);
+            }
         }
 
         private void onMsg(CactusMsg msg)  {
@@ -162,6 +170,17 @@ public class AvenderService extends Service {
         }
     }
 
+    private void notiVerdict()  {
+        CharSequence text = getText(R.string.verdict);
+        Notification noti = new Notification(R.drawable.verdict, text, System.currentTimeMillis());
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                                                                new Intent(this, VerdictRequest.class), 0);
+        noti.setLatestEventInfo(this, getText(R.string.verdict), text, contentIntent);
+        noti.defaults = Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE;
+        noti.flags |= Notification.FLAG_NO_CLEAR;
+        mNM.notify(NOTIFICATION_VERDICT, noti);
+    }
+
     private void showNoti()  {
         CharSequence text = getText(R.string.cactus_enabled);
         Notification noti = new Notification(R.drawable.ic_launcher, text, System.currentTimeMillis());
@@ -169,11 +188,11 @@ public class AvenderService extends Service {
                                                                 new Intent(this, MainActivity.class), 0);
         noti.setLatestEventInfo(this, getText(R.string.cactus_enabled), text, contentIntent);
         noti.flags |= Notification.FLAG_NO_CLEAR;
-        mNM.notify(NOTIFICATION, noti);
+        mNM.notify(NOTIFICATION_ACTIVE, noti);
     }
 
     private void hideNoti()  {
-        mNM.cancel(NOTIFICATION);
+        mNM.cancel(NOTIFICATION_ACTIVE);
     }
 
     private void loadSettings()  {
@@ -237,6 +256,7 @@ public class AvenderService extends Service {
         }
         mStateObs.startWatching();
         mNM = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        mKG = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
 
         applySettings();
 

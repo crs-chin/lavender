@@ -29,6 +29,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -59,6 +60,8 @@ import com.javender.Javender;
 public class VerdictRequest extends Activity {
 
     private final String LOG_TAG = "VERDICTREQ";
+
+    private final int NOTIFICATION_VERDICT = 19871127;
 
     private IAvenderService avenderService = null;
     private boolean mVerdicted = false;
@@ -178,6 +181,9 @@ public class VerdictRequest extends Activity {
     protected void onStart()  {
         super.onStart();
         bindService(new Intent(this, AvenderService.class), sc, Context.BIND_AUTO_CREATE);
+
+        NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancel(NOTIFICATION_VERDICT);
     }
 
     @Override

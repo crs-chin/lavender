@@ -28,4 +28,5 @@
     <string name="service_disconnected">Service Disconnected</string>
     <string name="cactus_enabled">Lavender Service Activated</string>
     <string name="button_kill">Kill</string>
+    <string name="verdict">Verdict Request</string>
 </resources>
