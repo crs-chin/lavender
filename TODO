@@ -25,7 +25,7 @@ CACTUS TODO:
 * 51. conntrack DEL event seems not delivered sometimes found on
    android
 * 52. consider implement conntrack check in GC.
-* 54.
 
 android porting:
 * 38. considering implement UI for more detailed control
+* 39. "fail to lookup tcp sj entry **** -> ****, droped" found in android

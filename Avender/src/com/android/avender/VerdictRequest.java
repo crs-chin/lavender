@@ -52,6 +52,7 @@ import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.CheckBox;
 import android.widget.Button;
+import android.widget.Toast;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -234,6 +235,11 @@ public class VerdictRequest extends Activity {
                 avenderService = IAvenderService.Stub.asInterface(service);
                 try {
                     mVerdictInfo = avenderService.getVerdict();
+                    if(mVerdictInfo == null)  {
+                        Toast.makeText(getApplicationContext(), "Verdict expired", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
                     printVerdictInfo(mVerdictInfo);
                 } catch (RemoteException e)  {
                     e.printStackTrace();
